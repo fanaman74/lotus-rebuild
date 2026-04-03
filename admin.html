@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lotus Admin — Menu Manager</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0d;
+      --surface: #161616;
+      --surface-2: #1e1e1e;
+      --border: #2a2a2a;
+      --text: #e8e8e8;
+      --text-muted: #666;
+      --accent: #c8a97e;
+      --accent-hover: #dbbf99;
+      --danger: #c0392b;
+      --danger-hover: #e74c3c;
+      --success: #27ae60;
+      --radius: 6px;
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; min-height: 100vh; }
+
+    /* ── Login ── */
+    #login-screen {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 2rem;
+    }
+    .login-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 2.5rem; width: 100%; max-width: 380px;
+    }
+    .login-box h1 { font-size: 1.25rem; margin-bottom: 0.25rem; }
+    .login-box p { color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.8125rem; }
+    .login-box input {
+      width: 100%; padding: 0.625rem 0.875rem;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius); color: var(--text);
+      font-size: 0.9375rem; margin-bottom: 0.875rem;
+    }
+    .login-box input:focus { outline: none; border-color: var(--accent); }
+
+    /* ── App shell ── */
+    #app { display: none; flex-direction: column; min-height: 100vh; }
+
+    header {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 0 1.5rem; height: 52px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .header-title { font-weight: 600; font-size: 0.9375rem; display: flex; align-items: center; gap: 0.5rem; }
+    .header-title span { color: var(--accent); }
+    .header-actions { display: flex; align-items: center; gap: 0.75rem; }
+
+    main { display: flex; flex: 1; }
+
+    /* ── Sidebar ── */
+    aside {
+      width: 220px; background: var(--surface); border-right: 1px solid var(--border);
+      padding: 1rem 0; flex-shrink: 0; position: sticky; top: 52px;
+      height: calc(100vh - 52px); overflow-y: auto;
+    }
+    .sidebar-label {
+      font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.08em;
+      color: var(--text-muted); text-transform: uppercase;
+      padding: 0 1rem 0.5rem;
+    }
+    .cat-nav-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.5rem 1rem; cursor: pointer; border-left: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .cat-nav-item:hover { background: var(--surface-2); }
+    .cat-nav-item.active { border-left-color: var(--accent); background: var(--surface-2); }
+    .cat-nav-item .cat-count { font-size: 0.75rem; color: var(--text-muted); background: var(--bg); padding: 1px 6px; border-radius: 10px; }
+
+    /* ── Content area ── */
+    .content { flex: 1; padding: 1.5rem; overflow-y: auto; }
+
+    .toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+    .toolbar-left { display: flex; align-items: center; gap: 0.75rem; }
+    .page-title { font-size: 1.125rem; font-weight: 600; }
+    .item-count { font-size: 0.8125rem; color: var(--text-muted); }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.375rem;
+      padding: 0.4375rem 0.875rem; border-radius: var(--radius);
+      font-size: 0.8125rem; font-weight: 500; cursor: pointer;
+      border: 1px solid transparent; transition: all 0.15s; white-space: nowrap;
+    }
+    .btn-primary { background: var(--accent); color: #000; border-color: var(--accent); }
+    .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .btn-ghost { background: transparent; color: var(--text); border-color: var(--border); }
+    .btn-ghost:hover { border-color: var(--text-muted); }
+    .btn-danger { background: transparent; color: var(--danger); border-color: var(--danger); }
+    .btn-danger:hover { background: var(--danger); color: #fff; }
+    .btn-sm { padding: 0.3125rem 0.625rem; font-size: 0.75rem; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-logout { background: transparent; color: var(--text-muted); border: none; font-size: 0.8125rem; cursor: pointer; }
+    .btn-logout:hover { color: var(--text); }
+
+    /* ── Category header card ── */
+    .cat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1rem 1.25rem; margin-bottom: 1rem;
+    }
+    .cat-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+    .cat-card-info { flex: 1; }
+    .cat-card-info h2 { font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .cat-card-info p { font-size: 0.8125rem; color: var(--text-muted); line-height: 1.5; }
+    .cat-card-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+
+    /* ── Items table ── */
+    .items-table { width: 100%; border-collapse: collapse; }
+    .items-table th {
+      text-align: left; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--text-muted);
+      padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border);
+    }
+    .items-table td { padding: 0.625rem 0.75rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .items-table tr:last-child td { border-bottom: none; }
+    .items-table tr:hover td { background: var(--surface-2); }
+    .item-name { font-weight: 500; }
+    .item-subtitle { font-size: 0.75rem; color: var(--text-muted); margin-top: 1px; }
+    .item-desc { font-size: 0.75rem; color: var(--text-muted); max-width: 320px; }
+    .item-price { font-weight: 600; color: var(--accent); white-space: nowrap; }
+    .item-actions { display: flex; gap: 0.375rem; justify-content: flex-end; }
+
+    .toggle-btn {
+      width: 36px; height: 20px; border-radius: 10px; border: none; cursor: pointer;
+      position: relative; transition: background 0.2s; flex-shrink: 0;
+    }
+    .toggle-btn.on { background: var(--success); }
+    .toggle-btn.off { background: var(--border); }
+    .toggle-btn::after {
+      content: ''; position: absolute; top: 2px; width: 16px; height: 16px;
+      border-radius: 50%; background: #fff; transition: left 0.2s;
+    }
+    .toggle-btn.on::after { left: 18px; }
+    .toggle-btn.off::after { left: 2px; }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+      z-index: 200; align-items: flex-start; justify-content: center;
+      padding: 2rem 1rem; overflow-y: auto;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); width: 100%; max-width: 560px;
+      padding: 1.5rem; position: relative;
+    }
+    .modal-title { font-size: 1rem; font-weight: 600; margin-bottom: 1.25rem; }
+    .modal-close {
+      position: absolute; top: 1rem; right: 1rem; background: none; border: none;
+      color: var(--text-muted); font-size: 1.25rem; cursor: pointer; line-height: 1;
+    }
+    .modal-close:hover { color: var(--text); }
+    .modal-footer { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.25rem; }
+
+    /* ── Form ── */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.875rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.375rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    label { font-size: 0.75rem; font-weight: 500; color: var(--text-muted); }
+    input[type="text"], input[type="number"], input[type="email"], textarea, select {
+      padding: 0.5rem 0.75rem; background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius); color: var(--text); font-size: 0.875rem;
+      font-family: var(--font); width: 100%;
+    }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); }
+    textarea { resize: vertical; min-height: 72px; }
+    select option { background: var(--surface); }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 999;
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.75rem 1.25rem;
+      font-size: 0.875rem; transform: translateY(100px); opacity: 0;
+      transition: all 0.25s; pointer-events: none;
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
+    #toast.success { border-color: var(--success); color: var(--success); }
+    #toast.error { border-color: var(--danger); color: var(--danger); }
+
+    /* ── Empty state ── */
+    .empty { text-align: center; padding: 3rem 1rem; color: var(--text-muted); }
+    .empty p { margin-top: 0.5rem; font-size: 0.8125rem; }
+
+    /* ── Loading ── */
+    .loading { text-align: center; padding: 3rem; color: var(--text-muted); }
+
+    /* ── Category edit inline ── */
+    .cat-desc-langs { display: grid; grid-template-columns: 1fr; gap: 0.5rem; }
+    .lang-tab-group { display: flex; gap: 0.25rem; margin-bottom: 0.5rem; }
+    .lang-tab { padding: 0.25rem 0.625rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-muted); }
+    .lang-tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
+    .lang-panel { display: none; }
+    .lang-panel.active { display: block; }
+
+    @media (max-width: 700px) {
+      aside { display: none; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Login -->
+<div id="login-screen">
+  <div class="login-box">
+    <h1>Lotus 荷花 — Admin</h1>
+    <p>Menu management portal</p>
+    <input type="password" id="login-password" placeholder="Password" autocomplete="current-password">
+    <button class="btn btn-primary" style="width:100%" onclick="login()">Sign in</button>
+    <p id="login-error" style="color:var(--danger);font-size:0.8125rem;margin-top:0.75rem;display:none">Incorrect password.</p>
+  </div>
+</div>
+
+<!-- App -->
+<div id="app">
+  <header>
+    <div class="header-title">Lotus 荷花 &mdash; <span>Menu Admin</span></div>
+    <div class="header-actions">
+      <button class="btn btn-primary btn-sm" onclick="openItemModal()">+ Add Item</button>
+      <button class="btn-logout" onclick="logout()">Sign out</button>
+    </div>
+  </header>
+  <main>
+    <aside id="sidebar">
+      <div class="sidebar-label">Categories</div>
+      <div id="cat-nav"></div>
+      <div style="padding:1rem;margin-top:0.5rem;border-top:1px solid var(--border)">
+        <button class="btn btn-ghost btn-sm" style="width:100%" onclick="openCatModal()">+ Add Category</button>
+      </div>
+    </aside>
+    <div class="content" id="content">
+      <div class="loading">Loading menu…</div>
+    </div>
+  </main>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- Item Modal -->
+<div class="modal-overlay" id="item-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('item-modal')">&times;</button>
+    <div class="modal-title" id="item-modal-title">Add Item</div>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Category</label>
+        <select id="f-category"></select>
+      </div>
+      <div class="form-group">
+        <label>Name (EN)</label>
+        <input type="text" id="f-name-en" placeholder="e.g. Wonton Soup">
+      </div>
+      <div class="form-group">
+        <label>Dutch name / subtitle</label>
+        <input type="text" id="f-subtitle" placeholder="e.g. Wan-Tan soep">
+      </div>
+      <div class="form-group">
+        <label>Price (€)</label>
+        <input type="number" id="f-price" step="0.01" min="0" placeholder="0.00">
+      </div>
+      <div class="form-group">
+        <label>Sort order</label>
+        <input type="number" id="f-sort" min="1" placeholder="1">
+      </div>
+      <div class="form-group full">
+        <label>Description (EN)</label>
+        <textarea id="f-desc-en" rows="2" placeholder="English description"></textarea>
+      </div>
+      <div class="form-group full">
+        <label>Description (FR)</label>
+        <textarea id="f-desc-fr" rows="2" placeholder="French description"></textarea>
+      </div>
+      <div class="form-group full">
+        <label>Description (NL)</label>
+        <textarea id="f-desc-nl" rows="2" placeholder="Dutch description"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('item-modal')">Cancel</button>
+      <button class="btn btn-primary" id="item-modal-save" onclick="saveItem()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Category Modal -->
+<div class="modal-overlay" id="cat-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('cat-modal')">&times;</button>
+    <div class="modal-title" id="cat-modal-title">Add Category</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Slug (URL-safe, unique)</label>
+        <input type="text" id="fc-slug" placeholder="e.g. dim-sum">
+      </div>
+      <div class="form-group">
+        <label>Sort order</label>
+        <input type="number" id="fc-sort" min="1" placeholder="11">
+      </div>
+      <div class="form-group">
+        <label>Name (EN)</label>
+        <input type="text" id="fc-name-en">
+      </div>
+      <div class="form-group">
+        <label>Name (FR)</label>
+        <input type="text" id="fc-name-fr">
+      </div>
+      <div class="form-group full">
+        <label>Name (NL)</label>
+        <input type="text" id="fc-name-nl">
+      </div>
+      <div class="form-group full">
+        <label>Description (EN)</label>
+        <textarea id="fc-desc-en" rows="2"></textarea>
+      </div>
+      <div class="form-group full">
+        <label>Description (FR)</label>
+        <textarea id="fc-desc-fr" rows="2"></textarea>
+      </div>
+      <div class="form-group full">
+        <label>Description (NL)</label>
+        <textarea id="fc-desc-nl" rows="2"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('cat-modal')">Cancel</button>
+      <button class="btn btn-primary" id="cat-modal-save" onclick="saveCat()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let token = localStorage.getItem('lotus_admin_token') || '';
+  let categories = [];
+  let items = [];
+  let activeCatSlug = null;
+  let editingItemId = null;
+  let editingCatId = null;
+
+  // ── Auth ──────────────────────────────────────────────────────────────────
+  async function login() {
+    const pw = document.getElementById('login-password').value;
+    const r = await fetch('/api/admin/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pw })
+    });
+    const d = await r.json();
+    if (!r.ok) { document.getElementById('login-error').style.display = 'block'; return; }
+    token = d.token;
+    localStorage.setItem('lotus_admin_token', token);
+    showApp();
+  }
+
+  function logout() {
+    token = '';
+    localStorage.removeItem('lotus_admin_token');
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+  }
+
+  document.getElementById('login-password').addEventListener('keydown', e => {
+    if (e.key === 'Enter') login();
+  });
+
+  // ── Bootstrap ─────────────────────────────────────────────────────────────
+  async function showApp() {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    await loadMenu();
+  }
+
+  async function api(method, path, body) {
+    const r = await fetch(path, {
+      method, headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: body ? JSON.stringify(body) : undefined
+    });
+    if (r.status === 401) { logout(); return null; }
+    return r.json();
+  }
+
+  async function loadMenu() {
+    const data = await api('GET', '/api/admin/menu');
+    if (!data) return;
+    categories = data.categories;
+    items = data.items;
+    renderSidebar();
+    if (!activeCatSlug && categories.length) activeCatSlug = categories[0].slug;
+    renderContent();
+  }
+
+  // ── Sidebar ───────────────────────────────────────────────────────────────
+  function renderSidebar() {
+    const nav = document.getElementById('cat-nav');
+    nav.innerHTML = categories.map(cat => {
+      const count = items.filter(i => i.category_slug === cat.slug).length;
+      return `<div class="cat-nav-item${cat.slug === activeCatSlug ? ' active' : ''}" onclick="selectCat('${cat.slug}')">
+        <span>${cat.name_en}</span>
+        <span class="cat-count">${count}</span>
+      </div>`;
+    }).join('');
+  }
+
+  function selectCat(slug) {
+    activeCatSlug = slug;
+    renderSidebar();
+    renderContent();
+  }
+
+  // ── Content ───────────────────────────────────────────────────────────────
+  function renderContent() {
+    const cat = categories.find(c => c.slug === activeCatSlug);
+    if (!cat) { document.getElementById('content').innerHTML = '<div class="loading">Select a category.</div>'; return; }
+    const catItems = items.filter(i => i.category_slug === cat.slug);
+    const content = document.getElementById('content');
+
+    content.innerHTML = `
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <div class="page-title">${cat.name_en}</div>
+          <div class="item-count">${catItems.length} item${catItems.length !== 1 ? 's' : ''}</div>
+        </div>
+        <div style="display:flex;gap:0.5rem">
+          <button class="btn btn-ghost btn-sm" onclick="openCatModal('${cat.id}')">Edit category</button>
+          <button class="btn btn-primary btn-sm" onclick="openItemModal(null,'${cat.slug}')">+ Add item</button>
+        </div>
+      </div>
+
+      <div class="cat-card">
+        <div class="cat-card-header">
+          <div class="cat-card-info">
+            <h2>${cat.name_en} / ${cat.name_fr} / ${cat.name_nl}</h2>
+            <p>${cat.description_en || ''}</p>
+          </div>
+        </div>
+      </div>
+
+      ${catItems.length === 0 ? `
+        <div class="empty">
+          <div>No items yet.</div>
+          <p><button class="btn btn-primary btn-sm" style="margin-top:0.75rem" onclick="openItemModal(null,'${cat.slug}')">Add first item</button></p>
+        </div>` : `
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th style="width:30px">#</th>
+              <th>Item</th>
+              <th>Description</th>
+              <th>Price</th>
+              <th>Active</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${catItems.map(item => `
+              <tr>
+                <td style="color:var(--text-muted)">${item.sort_order}</td>
+                <td>
+                  <div class="item-name">${item.name_en}</div>
+                  <div class="item-subtitle">${item.subtitle || ''}</div>
+                </td>
+                <td><div class="item-desc">${item.description_en || ''}</div></td>
+                <td class="item-price">€${parseFloat(item.price).toFixed(2)}</td>
+                <td>
+                  <button class="toggle-btn ${item.active ? 'on' : 'off'}"
+                    onclick="toggleItem(${item.id}, ${item.active})" title="${item.active ? 'Hide from menu' : 'Show on menu'}">
+                  </button>
+                </td>
+                <td>
+                  <div class="item-actions">
+                    <button class="btn btn-ghost btn-sm" onclick="openItemModal(${item.id})">Edit</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteItem(${item.id}, '${item.name_en.replace(/'/g, "\\'")}')">Del</button>
+                  </div>
+                </td>
+              </tr>`).join('')}
+          </tbody>
+        </table>`}
+    `;
+  }
+
+  // ── Toggle active ─────────────────────────────────────────────────────────
+  async function toggleItem(id, current) {
+    await api('PUT', `/api/admin/items/${id}`, { active: !current });
+    const item = items.find(i => i.id === id);
+    if (item) item.active = !current;
+    renderContent();
+    renderSidebar();
+    showToast(current ? 'Item hidden from menu' : 'Item visible on menu', 'success');
+  }
+
+  // ── Delete item ───────────────────────────────────────────────────────────
+  async function deleteItem(id, name) {
+    if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+    await api('DELETE', `/api/admin/items/${id}`);
+    items = items.filter(i => i.id !== id);
+    renderContent();
+    renderSidebar();
+    showToast('Item deleted', 'success');
+  }
+
+  // ── Item modal ────────────────────────────────────────────────────────────
+  function openItemModal(id, presetCat) {
+    editingItemId = id || null;
+    document.getElementById('item-modal-title').textContent = id ? 'Edit Item' : 'Add Item';
+
+    // Populate category select
+    const sel = document.getElementById('f-category');
+    sel.innerHTML = categories.map(c => `<option value="${c.slug}">${c.name_en}</option>`).join('');
+
+    if (id) {
+      const item = items.find(i => i.id === id);
+      sel.value = item.category_slug;
+      document.getElementById('f-name-en').value = item.name_en || '';
+      document.getElementById('f-subtitle').value = item.subtitle || '';
+      document.getElementById('f-price').value = item.price || '';
+      document.getElementById('f-sort').value = item.sort_order || '';
+      document.getElementById('f-desc-en').value = item.description_en || '';
+      document.getElementById('f-desc-fr').value = item.description_fr || '';
+      document.getElementById('f-desc-nl').value = item.description_nl || '';
+    } else {
+      document.getElementById('f-name-en').value = '';
+      document.getElementById('f-subtitle').value = '';
+      document.getElementById('f-price').value = '';
+      document.getElementById('f-desc-en').value = '';
+      document.getElementById('f-desc-fr').value = '';
+      document.getElementById('f-desc-nl').value = '';
+      // Default sort to end of category
+      const catSlug = presetCat || activeCatSlug;
+      if (catSlug) sel.value = catSlug;
+      const catItems = items.filter(i => i.category_slug === catSlug);
+      document.getElementById('f-sort').value = catItems.length + 1;
+    }
+
+    document.getElementById('item-modal').classList.add('open');
+    document.getElementById('f-name-en').focus();
+  }
+
+  async function saveItem() {
+    const payload = {
+      category_slug: document.getElementById('f-category').value,
+      name_en: document.getElementById('f-name-en').value.trim(),
+      subtitle: document.getElementById('f-subtitle').value.trim() || null,
+      price: parseFloat(document.getElementById('f-price').value),
+      sort_order: parseInt(document.getElementById('f-sort').value) || 1,
+      description_en: document.getElementById('f-desc-en').value.trim() || null,
+      description_fr: document.getElementById('f-desc-fr').value.trim() || null,
+      description_nl: document.getElementById('f-desc-nl').value.trim() || null,
+    };
+
+    if (!payload.name_en || isNaN(payload.price)) {
+      showToast('Name and price are required', 'error'); return;
+    }
+
+    const btn = document.getElementById('item-modal-save');
+    btn.disabled = true; btn.textContent = 'Saving…';
+
+    let result;
+    if (editingItemId) {
+      result = await api('PUT', `/api/admin/items/${editingItemId}`, payload);
+      const idx = items.findIndex(i => i.id === editingItemId);
+      if (idx !== -1) items[idx] = result;
+    } else {
+      result = await api('POST', '/api/admin/items', payload);
+      items.push(result);
+    }
+
+    btn.disabled = false; btn.textContent = 'Save';
+    closeModal('item-modal');
+    activeCatSlug = payload.category_slug;
+    renderSidebar();
+    renderContent();
+    showToast(editingItemId ? 'Item updated' : 'Item added', 'success');
+  }
+
+  // ── Category modal ────────────────────────────────────────────────────────
+  function openCatModal(id) {
+    editingCatId = id || null;
+    document.getElementById('cat-modal-title').textContent = id ? 'Edit Category' : 'Add Category';
+
+    if (id) {
+      const cat = categories.find(c => c.id === id);
+      document.getElementById('fc-slug').value = cat.slug;
+      document.getElementById('fc-slug').disabled = true;
+      document.getElementById('fc-sort').value = cat.sort_order;
+      document.getElementById('fc-name-en').value = cat.name_en || '';
+      document.getElementById('fc-name-fr').value = cat.name_fr || '';
+      document.getElementById('fc-name-nl').value = cat.name_nl || '';
+      document.getElementById('fc-desc-en').value = cat.description_en || '';
+      document.getElementById('fc-desc-fr').value = cat.description_fr || '';
+      document.getElementById('fc-desc-nl').value = cat.description_nl || '';
+    } else {
+      ['fc-slug','fc-name-en','fc-name-fr','fc-name-nl','fc-desc-en','fc-desc-fr','fc-desc-nl'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('fc-slug').disabled = false;
+      document.getElementById('fc-sort').value = categories.length + 1;
+    }
+
+    document.getElementById('cat-modal').classList.add('open');
+  }
+
+  async function saveCat() {
+    const payload = {
+      slug: document.getElementById('fc-slug').value.trim(),
+      sort_order: parseInt(document.getElementById('fc-sort').value) || categories.length + 1,
+      name_en: document.getElementById('fc-name-en').value.trim(),
+      name_fr: document.getElementById('fc-name-fr').value.trim(),
+      name_nl: document.getElementById('fc-name-nl').value.trim(),
+      description_en: document.getElementById('fc-desc-en').value.trim() || null,
+      description_fr: document.getElementById('fc-desc-fr').value.trim() || null,
+      description_nl: document.getElementById('fc-desc-nl').value.trim() || null,
+    };
+
+    if (!payload.name_en || !payload.slug) {
+      showToast('Slug and EN name are required', 'error'); return;
+    }
+
+    const btn = document.getElementById('cat-modal-save');
+    btn.disabled = true; btn.textContent = 'Saving…';
+
+    let result;
+    if (editingCatId) {
+      const { slug, ...updatePayload } = payload; // don't update slug
+      result = await api('PUT', `/api/admin/categories/${editingCatId}`, updatePayload);
+      const idx = categories.findIndex(c => c.id === editingCatId);
+      if (idx !== -1) categories[idx] = result;
+    } else {
+      result = await api('POST', '/api/admin/categories', payload);
+      categories.push(result);
+      categories.sort((a, b) => a.sort_order - b.sort_order);
+    }
+
+    btn.disabled = false; btn.textContent = 'Save';
+    closeModal('cat-modal');
+    activeCatSlug = result.slug;
+    renderSidebar();
+    renderContent();
+    showToast(editingCatId ? 'Category updated' : 'Category added', 'success');
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+  let toastTimer;
+  function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'show ' + (type || '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.className = '', 2800);
+  }
+
+  // Close modals on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+  });
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  if (token) {
+    showApp();
+  }
+</script>
+</body>
+</html>

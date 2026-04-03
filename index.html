@@ -1350,11 +1350,13 @@
       container.innerHTML = paragraphs.map(p => '<p>' + escapeHtml(p) + '</p>').join('');
     }
 
+    // Populated from /api/menu; falls back to SITE_DATA.menu on error
+    let menuData = null;
+
     function renderMenu(lang) {
       lang = lang || currentLang;
       const tabsContainer = document.getElementById('menu-tabs');
       const panelsContainer = document.getElementById('menu-panels');
-      const cats = TRANSLATIONS[lang].menuCategories;
 
       // Remember active tab index before clearing
       const activeTab = tabsContainer.querySelector('.menu__tab.active');
@@ -1363,10 +1365,22 @@
       tabsContainer.innerHTML = '';
       panelsContainer.innerHTML = '';
 
-      SITE_DATA.menu.forEach((cat, i) => {
+      // Use API data if loaded, else fall back to inline SITE_DATA
+      const source = menuData || SITE_DATA.menu.map((cat, idx) => ({
+        slug: cat.category.toLowerCase().replace(/\s+/g, '-'),
+        ['name_' + 'en']: cat.category,
+        ['description_' + 'en']: cat.description,
+        items: cat.items.map(it => ({
+          name_en: it.name, subtitle: it.subtitle,
+          description_en: it.description, price: it.price
+        }))
+      }));
+
+      source.forEach((cat, i) => {
         const tabId = 'tab-' + i;
         const panelId = 'panel-' + i;
-        const t = cats[i] || { name: cat.category, description: cat.description };
+        const catName = cat['name_' + lang] || cat.name_en;
+        const catDesc = cat['description_' + lang] || cat.description_en || '';
 
         const isActive = i === activeIndex;
         const tab = document.createElement('button');
@@ -1375,7 +1389,7 @@
         tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
         tab.setAttribute('aria-controls', panelId);
         tab.id = tabId;
-        tab.textContent = t.name;
+        tab.textContent = catName;
         tabsContainer.appendChild(tab);
 
         const panel = document.createElement('div');
@@ -1384,19 +1398,18 @@
         panel.setAttribute('aria-labelledby', tabId);
         panel.id = panelId;
 
-        let html = '<p class="menu__category-desc">' + escapeHtml(t.description) + '</p>';
+        let html = '<p class="menu__category-desc">' + escapeHtml(catDesc) + '</p>';
         html += '<div class="menu__items">';
 
         cat.items.forEach(item => {
-          const itemName = lang === 'nl' ? item.subtitle : item.name;
+          const itemName = lang === 'nl' ? (item.subtitle || item.name_en) : (item['name_' + lang] || item.name_en);
+          const itemDesc = item['description_' + lang] || item.description_en || '';
+          const price = typeof item.price === 'number' ? item.price.toFixed(2) : item.price;
           html += '<div class="menu__item">';
           html += '<div class="menu__item-header">';
           html += '<span class="menu__item-name">' + escapeHtml(itemName) + '</span>';
-          html += '<span class="menu__item-price">&euro;' + escapeHtml(item.price) + '</span>';
+          html += '<span class="menu__item-price">&euro;' + escapeHtml(price) + '</span>';
           html += '</div>';
-          const itemDesc = (lang !== 'en' && ITEM_TRANSLATIONS[lang] && ITEM_TRANSLATIONS[lang][item.name])
-            ? ITEM_TRANSLATIONS[lang][item.name]
-            : item.description;
           html += '<div class="menu__item-desc">' + escapeHtml(itemDesc) + '</div>';
           html += '</div>';
         });
@@ -2239,11 +2252,12 @@
 
       document.getElementById('booking-back-2').addEventListener('click', () => showStep(1));
 
-      document.getElementById('booking-submit').addEventListener('click', () => {
+      document.getElementById('booking-submit').addEventListener('click', async () => {
         const first = document.getElementById('booking-firstname').value.trim();
         const last = document.getElementById('booking-lastname').value.trim();
         const email = document.getElementById('booking-email').value.trim();
         const phone = document.getElementById('booking-phone').value.trim();
+        const notes = document.getElementById('booking-notes').value.trim();
         if (!first || !last || !email || !phone) {
           [first ? null : 'booking-firstname', last ? null : 'booking-lastname',
            email ? null : 'booking-email', phone ? null : 'booking-phone']
@@ -2255,20 +2269,54 @@
           return;
         }
 
-        // Format date nicely
-        const d = new Date(dateInput.value + 'T12:00:00');
-        const dateFormatted = d.toLocaleDateString(currentLang === 'en' ? 'en-GB' : currentLang === 'fr' ? 'fr-BE' : 'nl-BE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        const submitBtn = document.getElementById('booking-submit');
+        submitBtn.disabled = true;
+        submitBtn.textContent = '...';
 
-        const tpl = getT(currentLang, 'booking.summaryTpl') || '';
-        const summary = tpl
-          .replace('{name}', first)
-          .replace('{guests}', guestCount)
-          .replace('{date}', dateFormatted)
-          .replace('{time}', selectedTime)
-          .replace('{email}', email);
+        try {
+          const resp = await fetch('/api/book', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              guests: guestCount, date: dateInput.value, time: selectedTime,
+              firstname: first, lastname: last, email, phone, notes,
+              lang: currentLang
+            })
+          });
+          const data = await resp.json();
+          if (!resp.ok) throw new Error(data.error || 'Server error');
 
-        document.getElementById('booking-summary').textContent = summary;
-        showStep(3);
+          // Format date nicely
+          const d = new Date(dateInput.value + 'T12:00:00');
+          const locale = currentLang === 'fr' ? 'fr-BE' : currentLang === 'nl' ? 'nl-BE' : 'en-GB';
+          const dateFormatted = d.toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+          const tpl = getT(currentLang, 'booking.summaryTpl') || '';
+          const summary = tpl
+            .replace('{name}', first)
+            .replace('{guests}', guestCount)
+            .replace('{date}', dateFormatted)
+            .replace('{time}', selectedTime)
+            .replace('{email}', email);
+
+          document.getElementById('booking-summary').textContent = summary;
+          // Show ref code
+          let refEl = document.getElementById('booking-ref');
+          if (!refEl) {
+            refEl = document.createElement('p');
+            refEl.id = 'booking-ref';
+            refEl.style.cssText = 'font-family:var(--font-body);font-size:var(--text-lg);color:var(--color-accent);letter-spacing:0.1em;font-weight:700;margin:1rem 0;';
+            document.getElementById('booking-summary').insertAdjacentElement('afterend', refEl);
+          }
+          refEl.textContent = data.ref;
+          showStep(3);
+        } catch (err) {
+          alert('Something went wrong. Please call us at 02 721 98 33.');
+          console.error(err);
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = getT(currentLang, 'booking.confirm');
+        }
       });
 
       document.getElementById('booking-new').addEventListener('click', () => {
@@ -2290,7 +2338,7 @@
        ======================================== */
     document.addEventListener('DOMContentLoaded', function() {
       renderAbout();
-      renderMenu();
+      renderMenu();   // renders immediately from SITE_DATA fallback
       renderContact();
       renderFooter();
       initThemeToggle();
@@ -2299,6 +2347,12 @@
       initAnimations();
       initCarousel();
       initBooking();
+
+      // Fetch live menu from API, re-render if successful
+      fetch('/api/menu')
+        .then(r => r.ok ? r.json() : Promise.reject())
+        .then(data => { menuData = data; renderMenu(currentLang); })
+        .catch(() => { /* silently keep SITE_DATA fallback */ });
     });
   </script>
 </body>
