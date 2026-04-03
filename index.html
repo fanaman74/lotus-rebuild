@@ -1,0 +1,2305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lotus 荷花 — Restaurant Chinois, Kraainem</title>
+  <meta name="description" content="Chinese restaurant in Kraainem, Brussels. Traditional Cantonese and Northern Chinese dishes, vegan options. Tuesday through Sunday.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chango&family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* ========================================
+       CSS Custom Properties
+       ======================================== */
+    :root {
+      --color-bg: #000000;
+      --color-bg-elevated: #0a0a0a;
+      --color-surface: #111111;
+      --color-border: #1a1a1a;
+      --color-text-primary: #ffffff;
+      --color-text-secondary: #999999;
+      --color-text-muted: #555555;
+      --color-accent: #c8a97e;
+      --color-accent-hover: #dbbf99;
+      --color-nav-bg: rgba(0,0,0,0.95);
+
+      --font-display: 'Chango', Georgia, 'Times New Roman', serif;
+      --font-body: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+      --text-xs: 0.75rem;
+      --text-sm: 0.8125rem;
+      --text-base: 1rem;
+      --text-lg: 1.25rem;
+      --text-xl: 1.375rem;
+      --text-2xl: 1.875rem;
+      --text-3xl: 2rem;
+      --text-4xl: 3rem;
+
+      --content-width: 800px;
+      --content-wide: 1100px;
+      --gap: 24px;
+    }
+
+    :root.light {
+      --color-bg: #f7f3ee;
+      --color-bg-elevated: #efe9e1;
+      --color-surface: #e8e1d8;
+      --color-border: #ccc4b8;
+      --color-text-primary: #1c1410;
+      --color-text-secondary: #4a4038;
+      --color-text-muted: #8a7d70;
+      --color-accent: #96681e;
+      --color-accent-hover: #b07a28;
+      --color-nav-bg: rgba(247,243,238,0.98);
+    }
+
+    /* ========================================
+       Reset & Base
+       ======================================== */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      line-height: 1.6;
+      color: var(--color-text-primary);
+      background-color: var(--color-bg);
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    /* ========================================
+       Utility
+       ======================================== */
+    .container {
+      max-width: var(--content-width);
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    .container--wide {
+      max-width: var(--content-wide);
+    }
+
+    /* ========================================
+       Animations
+       ======================================== */
+    [data-animate] {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    [data-animate].visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      [data-animate] {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+    }
+
+    /* ========================================
+       Navigation
+       ======================================== */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 1.25rem 1.5rem;
+      transition: background-color 0.4s ease, border-color 0.4s ease;
+      border-bottom: 1px solid transparent;
+    }
+
+    .nav.scrolled {
+      background-color: var(--color-nav-bg);
+      border-bottom-color: var(--color-border);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .nav__inner {
+      max-width: var(--content-wide);
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav__brand {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      letter-spacing: 0.05em;
+      color: var(--color-text-primary);
+    }
+
+    .nav__brand span {
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      margin-left: 0.5rem;
+      letter-spacing: 0.08em;
+    }
+
+    .nav__links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav__links a {
+      font-size: var(--text-sm);
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.3s ease;
+    }
+
+    .nav__links a:hover {
+      color: var(--color-text-primary);
+    }
+
+    .nav__toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    .nav__toggle span {
+      display: block;
+      width: 22px;
+      height: 1px;
+      background: var(--color-text-primary);
+      margin: 6px 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .nav__toggle.active span:nth-child(1) {
+      transform: rotate(45deg) translate(4px, 5px);
+    }
+
+    .nav__toggle.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .nav__toggle.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(4px, -5px);
+    }
+
+    /* Mobile overlay */
+    .nav__overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--color-bg);
+      z-index: 99;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav__overlay.open {
+      display: flex;
+    }
+
+    .nav__overlay-links {
+      list-style: none;
+      text-align: center;
+    }
+
+    .nav__overlay-links li {
+      margin: 1.5rem 0;
+    }
+
+    .nav__overlay-links a {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      color: var(--color-text-secondary);
+      transition: color 0.3s ease;
+    }
+
+    .nav__overlay-links a:hover {
+      color: var(--color-text-primary);
+    }
+
+    @media (max-width: 768px) {
+      .nav__links {
+        display: none;
+      }
+      .nav__toggle {
+        display: block;
+      }
+    }
+
+    /* ========================================
+       Hero
+       ======================================== */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero__video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      opacity: 0.35;
+      z-index: 0;
+    }
+
+    .hero__overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.45) 0%,
+        rgba(0,0,0,0.2) 40%,
+        rgba(0,0,0,0.5) 100%
+      );
+      z-index: 1;
+    }
+
+    .hero__content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hero__brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 1.75rem;
+      line-height: 1;
+    }
+
+    .hero__brand-primary {
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 1rem;
+      letter-spacing: 0.5em;
+      color: var(--color-text-primary);
+      text-transform: uppercase;
+    }
+
+    .hero__brand-accent {
+      font-family: var(--font-display);
+      font-size: 4rem;
+      font-weight: 300;
+      color: var(--color-accent);
+      letter-spacing: 0.05em;
+      line-height: 1;
+      margin-top: 0.1rem;
+    }
+
+    .hero__headline {
+      font-family: var(--font-display);
+      font-size: var(--text-3xl);
+      font-weight: 300;
+      font-style: italic;
+      line-height: 1.2;
+      color: var(--color-text-primary);
+      margin-bottom: 1.5rem;
+      max-width: 700px;
+    }
+
+    .hero__subheadline {
+      font-size: var(--text-xl);
+      font-weight: 300;
+      color: var(--color-text-secondary);
+      max-width: 520px;
+      line-height: 1.75;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero__cta {
+      display: inline-block;
+      padding: 0.85rem 2.5rem;
+      border: 1px solid var(--color-accent);
+      color: var(--color-accent);
+      font-size: var(--text-sm);
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .hero__cta:hover {
+      background-color: var(--color-accent);
+      color: var(--color-bg);
+    }
+
+    .hero__scroll {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .hero__scroll-text {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .hero__scroll-line {
+      width: 1px;
+      height: 40px;
+      background: var(--color-text-muted);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.3; transform: scaleY(0.5); transform-origin: top; }
+      50% { opacity: 1; transform: scaleY(1); transform-origin: top; }
+    }
+
+    @media (min-width: 1025px) {
+      .hero__headline {
+        font-size: var(--text-4xl);
+      }
+    }
+
+    /* ========================================
+       Section shared
+       ======================================== */
+    .section {
+      padding: 5rem 0;
+    }
+
+    .section__title {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    .section__divider {
+      width: 40px;
+      height: 1px;
+      background: var(--color-accent);
+      margin: 1.5rem auto 2rem;
+    }
+
+    @media (min-width: 768px) {
+      .section {
+        padding: 6rem 0;
+      }
+    }
+
+    /* ========================================
+       About
+       ======================================== */
+    .about__body {
+      color: var(--color-text-secondary);
+      line-height: 1.8;
+      max-width: var(--content-width);
+    }
+
+    .about__body p {
+      margin-bottom: 1.25rem;
+    }
+
+    .about__body p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* ========================================
+       Menu
+       ======================================== */
+    .menu-section {
+      padding-bottom: 6rem;
+    }
+
+    .menu__tabs {
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: 2.5rem;
+    }
+
+    .menu__tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .menu__tab {
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      padding: 0.75rem 1.25rem;
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      font-weight: 500;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: color 0.3s ease, border-color 0.3s ease;
+      margin-bottom: -1px;
+    }
+
+    .menu__tab:hover {
+      color: var(--color-text-secondary);
+    }
+
+    .menu__tab.active {
+      color: var(--color-text-primary);
+      border-bottom-color: var(--color-accent);
+    }
+
+    .menu__category {
+      display: none;
+    }
+
+    .menu__category.active {
+      display: block;
+    }
+
+    .menu__category-desc {
+      color: var(--color-text-secondary);
+      font-size: var(--text-base);
+      line-height: 1.7;
+      margin-bottom: 2rem;
+      max-width: 600px;
+      font-style: italic;
+    }
+
+    .menu__items {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .menu__item {
+      padding: 1.25rem 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .menu__item:last-child {
+      border-bottom: none;
+    }
+
+    .menu__item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .menu__item-name {
+      font-weight: 700;
+      font-size: var(--text-base);
+      color: var(--color-text-primary);
+    }
+
+    .menu__item-price {
+      font-weight: 500;
+      font-size: var(--text-sm);
+      color: var(--color-accent);
+      flex-shrink: 0;
+    }
+
+    .menu__item-subtitle {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      font-style: italic;
+      margin-bottom: 0.35rem;
+    }
+
+    .menu__item-desc {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+    }
+
+    @media (min-width: 1025px) {
+      .menu__items {
+        grid-template-columns: 1fr 1fr;
+        column-gap: 3rem;
+      }
+
+      .menu__item {
+        padding: 1.25rem 0;
+      }
+    }
+
+    /* ========================================
+       Dishes Carousel
+       ======================================== */
+    .dishes {
+      padding: 5rem 0;
+      overflow: hidden;
+    }
+
+    .dishes__header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+      padding: 0 1.5rem;
+      max-width: var(--content-wide);
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .dishes__title-block {
+      text-align: center;
+    }
+
+    .dishes__title-block h2 {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    .dishes__title-block .section__divider {
+      margin: 1rem auto 0;
+    }
+
+    .lang-toggle {
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--color-border);
+    }
+
+    .nav__lang {
+      border-color: rgba(255,255,255,0.12);
+    }
+
+    :root.light .nav__lang {
+      border-color: rgba(0,0,0,0.15);
+    }
+
+    @media (max-width: 768px) {
+      .nav__lang { display: none; }
+    }
+
+    .theme-toggle {
+      background: none;
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--color-text-secondary);
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: border-color 0.3s, color 0.3s;
+      flex-shrink: 0;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--color-accent);
+      color: var(--color-text-primary);
+    }
+
+    :root.light .theme-toggle {
+      border-color: rgba(0,0,0,0.15);
+    }
+
+    .theme-toggle svg { width: 15px; height: 15px; }
+    .theme-toggle .icon-moon { display: block; }
+    .theme-toggle .icon-sun  { display: none; }
+    :root.light .theme-toggle .icon-moon { display: none; }
+    :root.light .theme-toggle .icon-sun  { display: block; }
+
+    /* Light mode: hero text stays white — it's over a video */
+    :root.light .hero__brand-primary,
+    :root.light .hero__headline,
+    :root.light .hero__subheadline,
+    :root.light .hero__scroll-text {
+      color: #ffffff;
+    }
+
+    :root.light .hero__brand-accent {
+      color: #e8c98a;
+    }
+
+    :root.light .hero__cta {
+      border-color: #ffffff;
+      color: #ffffff;
+    }
+
+    :root.light .hero__cta:hover {
+      background-color: #ffffff;
+      color: #1c1410;
+    }
+
+    :root.light .hero__scroll-line {
+      background: rgba(255,255,255,0.5);
+    }
+
+    /* Stronger overlay in light mode so video stays atmospheric */
+    :root.light .hero__overlay {
+      background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.55) 0%,
+        rgba(0,0,0,0.35) 45%,
+        rgba(0,0,0,0.6) 100%
+      );
+    }
+
+    /* Nav in light mode: dark text, clear background when scrolled */
+    :root.light .nav__brand,
+    :root.light .nav__links a {
+      color: #1c1410;
+    }
+
+    :root.light .nav__links a:hover {
+      color: var(--color-accent);
+    }
+
+    :root.light .nav__toggle span {
+      background: #1c1410;
+    }
+
+    :root.light .theme-toggle {
+      color: #4a4038;
+      border-color: rgba(0,0,0,0.18);
+    }
+
+    :root.light .theme-toggle:hover {
+      color: var(--color-accent);
+      border-color: var(--color-accent);
+    }
+
+    :root.light .lang-btn {
+      color: #4a4038;
+    }
+
+    :root.light .lang-btn.active {
+      background: var(--color-accent);
+      color: #ffffff;
+    }
+
+    .lang-btn {
+      background: none;
+      border: none;
+      padding: 0.45rem 0.9rem;
+      font-family: var(--font-body);
+      font-size: var(--text-xs);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      transition: background-color 0.25s, color 0.25s;
+      border-right: 1px solid var(--color-border);
+      text-transform: uppercase;
+    }
+
+    .lang-btn:last-child { border-right: none; }
+
+    .lang-btn.active {
+      background: var(--color-accent);
+      color: var(--color-bg);
+    }
+
+    .carousel-track-wrapper {
+      overflow: hidden;
+      padding: 0 1.5rem;
+    }
+
+    .carousel-track {
+      display: flex;
+      gap: 1.25rem;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: transform;
+    }
+
+    .dish-card {
+      flex: 0 0 calc(33.333% - 0.84rem);
+      min-width: 0;
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      background: var(--color-surface);
+    }
+
+    .dish-card__img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.6s ease, opacity 0.4s ease;
+      opacity: 0.85;
+    }
+
+    .dish-card:hover .dish-card__img {
+      transform: scale(1.04);
+      opacity: 1;
+    }
+
+    .dish-card__overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.3) 45%, rgba(0,0,0,0.05) 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 1.25rem;
+    }
+
+    /* Card text always white — it sits over a photo */
+    .dish-card__name {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      color: #ffffff;
+      line-height: 1.25;
+      margin-bottom: 0.3rem;
+    }
+
+    .dish-card__sub {
+      font-size: var(--text-xs);
+      color: rgba(255,255,255,0.75);
+      font-style: italic;
+    }
+
+    .dish-card__price {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(0,0,0,0.72);
+      color: #e8c98a;
+      font-size: var(--text-xs);
+      font-weight: 700;
+      padding: 0.35rem 0.7rem;
+      letter-spacing: 0.05em;
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(232,201,138,0.3);
+    }
+
+    .carousel-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.75rem;
+      padding: 0 1.5rem;
+    }
+
+    .carousel-btn {
+      background: none;
+      border: 1px solid var(--color-border);
+      color: var(--color-text-secondary);
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: border-color 0.3s, color 0.3s;
+      flex-shrink: 0;
+    }
+
+    .carousel-btn:hover {
+      border-color: var(--color-accent);
+      color: var(--color-text-primary);
+    }
+
+    .carousel-btn svg { width: 16px; height: 16px; }
+
+    .carousel-dots {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .carousel-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-border);
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: background 0.3s, transform 0.3s;
+    }
+
+    .carousel-dot.active {
+      background: var(--color-accent);
+      transform: scale(1.4);
+    }
+
+    @media (max-width: 1024px) {
+      .dish-card {
+        flex: 0 0 calc(50% - 0.625rem);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .dish-card {
+        flex: 0 0 calc(100% - 0rem);
+      }
+      .dishes__header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+    }
+
+    /* ========================================
+       Contact
+       ======================================== */
+    .contact__grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+
+    .contact__block h3 {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      margin-bottom: 1.25rem;
+    }
+
+    .contact__address,
+    .contact__phone {
+      color: var(--color-text-secondary);
+      margin-bottom: 1rem;
+      line-height: 1.7;
+    }
+
+    .contact__phone a {
+      color: var(--color-accent);
+      transition: color 0.3s ease;
+    }
+
+    .contact__phone a:hover {
+      color: var(--color-accent-hover);
+    }
+
+    .contact__hours-title {
+      font-weight: 700;
+      font-size: var(--text-sm);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-text-primary);
+      margin-bottom: 1rem;
+    }
+
+    .contact__hours-table {
+      width: 100%;
+      max-width: 340px;
+    }
+
+    .contact__hours-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--color-border);
+      font-size: var(--text-sm);
+    }
+
+    .contact__hours-day {
+      color: var(--color-text-secondary);
+    }
+
+    .contact__hours-time {
+      color: var(--color-text-primary);
+    }
+
+    .contact__hours-time--closed {
+      color: var(--color-text-muted);
+    }
+
+    .contact__hours-note {
+      margin-top: 1rem;
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      font-style: italic;
+    }
+
+    .contact__map-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+      padding: 0.7rem 1.5rem;
+      border: 1px solid var(--color-border);
+      color: var(--color-text-secondary);
+      font-size: var(--text-sm);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      transition: border-color 0.3s ease, color 0.3s ease;
+    }
+
+    .contact__map-link:hover {
+      border-color: var(--color-accent);
+      color: var(--color-text-primary);
+    }
+
+    .contact__map-link svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    @media (min-width: 768px) {
+      .contact__grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+      }
+    }
+
+    /* ========================================
+       Booking
+       ======================================== */
+    .booking-section {
+      background: var(--color-surface);
+    }
+    .booking-widget {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .booking-step { display: none; }
+    .booking-step.active { display: block; }
+    .booking-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .booking-field { display: flex; flex-direction: column; gap: 0.5rem; }
+    .booking-field--full { grid-column: 1 / -1; }
+    .booking-row { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .booking-label {
+      font-size: var(--text-xs);
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-text-secondary);
+    }
+    .booking-input {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      color: var(--color-text-primary);
+      padding: 0.75rem 1rem;
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      border-radius: 0;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .booking-input:focus { border-color: var(--color-accent); }
+    .booking-textarea { resize: vertical; min-height: 80px; }
+    .booking-guests {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      padding: 0.65rem 1rem;
+    }
+    .guests-btn {
+      background: none;
+      border: none;
+      color: var(--color-accent);
+      font-size: 1.25rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0 0.25rem;
+    }
+    .guests-btn:hover { color: var(--color-accent-hover); }
+    .guests-count { font-size: var(--text-lg); font-weight: 500; min-width: 1.5rem; text-align: center; }
+    .time-slots {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .time-slot {
+      padding: 0.4rem 0.85rem;
+      border: 1px solid var(--color-border);
+      background: var(--color-bg);
+      color: var(--color-text-primary);
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .time-slot:hover { border-color: var(--color-accent); color: var(--color-accent); }
+    .time-slot.selected { background: var(--color-accent); border-color: var(--color-accent); color: #000; }
+    .booking-closed { font-size: var(--text-sm); color: var(--color-text-muted); font-style: italic; }
+    .booking-btn {
+      padding: 0.85rem 2.5rem;
+      border: 1px solid var(--color-accent);
+      background: var(--color-accent);
+      color: #000;
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .booking-btn:hover { background: var(--color-accent-hover); border-color: var(--color-accent-hover); }
+    .booking-btn--ghost {
+      background: transparent;
+      color: var(--color-text-secondary);
+      border-color: var(--color-border);
+    }
+    .booking-btn--ghost:hover { border-color: var(--color-text-secondary); color: var(--color-text-primary); background: transparent; }
+    .booking-actions { display: flex; gap: 1rem; align-items: center; }
+    .booking-confirmation { text-align: center; padding: 3rem 1rem; }
+    .booking-check {
+      width: 64px; height: 64px;
+      border: 2px solid var(--color-accent);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.75rem; color: var(--color-accent);
+      margin: 0 auto 1.5rem;
+    }
+    .booking-confirmed-title {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      margin-bottom: 1rem;
+    }
+    .booking-summary { color: var(--color-text-secondary); margin-bottom: 2rem; line-height: 1.7; }
+    @media (max-width: 640px) {
+      .booking-fields { grid-template-columns: 1fr; }
+      .booking-row { grid-template-columns: 1fr; }
+    }
+
+    /* ========================================
+       Footer
+       ======================================== */
+    .footer {
+      padding: 3rem 1.5rem;
+      text-align: center;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .footer__tagline {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      color: var(--color-text-secondary);
+      margin-bottom: 1.5rem;
+    }
+
+    .footer__meta {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <div class="nav__inner">
+      <a href="#hero" class="nav__brand">LOTUS <span>荷花</span></a>
+      <ul class="nav__links">
+        <li><a href="#about" data-i18n="nav.about">About</a></li>
+        <li><a href="#menu" data-i18n="nav.menu">Menu</a></li>
+        <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
+        <li><a href="#booking" data-i18n="nav.booking">Book</a></li>
+      </ul>
+      <div class="lang-toggle nav__lang" role="group" aria-label="Language selector">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="fr">FR</button>
+        <button class="lang-btn" data-lang="nl">NL</button>
+      </div>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle light/dark mode">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+      <button class="nav__toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile overlay -->
+  <div class="nav__overlay" aria-hidden="true">
+    <ul class="nav__overlay-links">
+      <li><a href="#about" data-i18n="nav.about">About</a></li>
+      <li><a href="#menu" data-i18n="nav.menu">Menu</a></li>
+      <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
+    </ul>
+  </div>
+
+  <!-- Hero -->
+  <section id="hero" class="hero">
+    <video class="hero__video" autoplay muted loop playsinline preload="auto">
+      <source src="https://videos.pexels.com/video-files/2620043/2620043-hd_1920_1080_25fps.mp4" type="video/mp4">
+      <source src="https://videos.pexels.com/video-files/2620043/2620043-hd_1280_720_25fps.mp4" type="video/mp4">
+      <source src="https://videos.pexels.com/video-files/2620043/2620043-sd_960_540_25fps.mp4" type="video/mp4">
+    </video>
+    <div class="hero__overlay"></div>
+    <div class="hero__content">
+      <div class="hero__brand">
+        <span class="hero__brand-primary">荷花中国饭店</span>
+        <span class="hero__brand-accent">Lotus</span>
+      </div>
+      <h1 class="hero__headline" data-i18n-html="hero.headline">Home made<br>Chinese cooking.</h1>
+      <p class="hero__subheadline" data-i18n="hero.subheadline">A neighbourhood table in Kraainem — where tradition meets the quiet pleasure of a well-made dish.</p>
+      <a href="#menu" class="hero__cta" data-i18n="hero.cta">View the Menu</a>
+    </div>
+    <div class="hero__scroll">
+      <span class="hero__scroll-text" data-i18n="hero.scroll">Scroll</span>
+      <span class="hero__scroll-line"></span>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="section">
+    <div class="container" data-animate>
+      <h2 class="section__title" data-i18n="about.title">Our Table</h2>
+      <div class="section__divider"></div>
+      <div class="about__body" id="about-body"></div>
+    </div>
+  </section>
+
+  <!-- Dishes Carousel -->
+  <section class="dishes" data-animate>
+    <div class="dishes__header">
+      <div class="dishes__title-block">
+        <h2 data-i18n="dishes.title">Featured Dishes</h2>
+        <div class="section__divider"></div>
+      </div>
+    </div>
+    <div class="carousel-track-wrapper">
+      <div class="carousel-track" id="carousel-track"></div>
+    </div>
+    <div class="carousel-controls">
+      <button class="carousel-btn" id="carousel-prev" aria-label="Previous">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="carousel-dots" id="carousel-dots"></div>
+      <button class="carousel-btn" id="carousel-next" aria-label="Next">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- Menu -->
+  <section id="menu" class="section menu-section">
+    <div class="container container--wide">
+      <div data-animate>
+        <h2 class="section__title" data-i18n="menu.title">Menu</h2>
+        <div class="section__divider"></div>
+      </div>
+      <div class="menu__tabs" role="tablist" aria-label="Menu categories" id="menu-tabs"></div>
+      <div id="menu-panels"></div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="section">
+    <div class="container" data-animate>
+      <h2 class="section__title" data-i18n="contact.title">Find Us</h2>
+      <div class="section__divider"></div>
+      <div class="contact__grid" id="contact-content"></div>
+    </div>
+  </section>
+
+  <!-- Booking -->
+  <section id="booking" class="section booking-section">
+    <div class="container" data-animate>
+      <h2 class="section__title" data-i18n="booking.title">Reserve a Table</h2>
+      <div class="section__divider"></div>
+      <div class="booking-widget">
+
+        <!-- Step 1: Date / Guests / Time -->
+        <div class="booking-step active" id="booking-step-1">
+          <div class="booking-fields">
+            <div class="booking-field">
+              <label class="booking-label" data-i18n="booking.guests">Guests</label>
+              <div class="booking-guests">
+                <button class="guests-btn" id="guests-minus" aria-label="Fewer guests">&#8722;</button>
+                <span class="guests-count" id="guests-count">2</span>
+                <button class="guests-btn" id="guests-plus" aria-label="More guests">&#43;</button>
+              </div>
+            </div>
+            <div class="booking-field">
+              <label class="booking-label" for="booking-date" data-i18n="booking.date">Date</label>
+              <input type="date" id="booking-date" class="booking-input">
+            </div>
+            <div class="booking-field booking-field--full">
+              <label class="booking-label" data-i18n="booking.time">Time</label>
+              <div class="time-slots" id="time-slots"></div>
+              <p class="booking-closed" id="booking-closed" style="display:none" data-i18n="booking.closed">We are closed on Mondays and Tuesday midday.</p>
+            </div>
+          </div>
+          <button class="booking-btn" id="booking-next-1" data-i18n="booking.continue">Continue</button>
+        </div>
+
+        <!-- Step 2: Contact info -->
+        <div class="booking-step" id="booking-step-2">
+          <div class="booking-fields">
+            <div class="booking-row">
+              <div class="booking-field">
+                <label class="booking-label" for="booking-firstname" data-i18n="booking.firstname">First name</label>
+                <input type="text" id="booking-firstname" class="booking-input" autocomplete="given-name">
+              </div>
+              <div class="booking-field">
+                <label class="booking-label" for="booking-lastname" data-i18n="booking.lastname">Last name</label>
+                <input type="text" id="booking-lastname" class="booking-input" autocomplete="family-name">
+              </div>
+            </div>
+            <div class="booking-field">
+              <label class="booking-label" for="booking-email" data-i18n="booking.email">Email</label>
+              <input type="email" id="booking-email" class="booking-input" autocomplete="email">
+            </div>
+            <div class="booking-field">
+              <label class="booking-label" for="booking-phone" data-i18n="booking.phone">Phone</label>
+              <input type="tel" id="booking-phone" class="booking-input" autocomplete="tel">
+            </div>
+            <div class="booking-field booking-field--full">
+              <label class="booking-label" for="booking-notes" data-i18n="booking.notes">Special requests</label>
+              <textarea id="booking-notes" class="booking-input booking-textarea" rows="3"></textarea>
+            </div>
+          </div>
+          <div class="booking-actions">
+            <button class="booking-btn booking-btn--ghost" id="booking-back-2" data-i18n="booking.back">Back</button>
+            <button class="booking-btn" id="booking-submit" data-i18n="booking.confirm">Confirm Reservation</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Confirmation -->
+        <div class="booking-step" id="booking-step-3">
+          <div class="booking-confirmation">
+            <div class="booking-check">&#10003;</div>
+            <h3 class="booking-confirmed-title" data-i18n="booking.confirmed">Reservation Confirmed</h3>
+            <p class="booking-summary" id="booking-summary"></p>
+            <button class="booking-btn booking-btn--ghost" id="booking-new" data-i18n="booking.new">Make another reservation</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p class="footer__tagline" id="footer-tagline"></p>
+    <p class="footer__meta" id="footer-meta"></p>
+  </footer>
+
+  <script>
+    /* ========================================
+       Site Data (inlined from copy.json)
+       ======================================== */
+    const SITE_DATA = {"meta":{"restaurant_name":"Lotus","chinese_name":"荷花中国饭店","subtitle":"Restaurant Chinois","vat":"BE0627685416"},"hero":{"headline":"Chinese cooking, honestly made.","subheadline":"A neighbourhood table in Kraainem — where tradition meets the quiet pleasure of a well-made dish.","cta":"View the Menu"},"about":{"title":"Our Table","body":"Lotus has been a fixture of Kraainem's dining landscape for decades. What began as a modest Chinese kitchen has matured into something rarer — a restaurant where the recipes stay close to their origins and the welcome feels unhurried.\n\nThe kitchen works with a vocabulary rooted in Cantonese and Northern Chinese traditions: hand-folded dumplings, roast duck carved to order, and wok dishes built on a foundation of fresh aromatics and honest heat. More recently, a full range of vegan and vegetarian dishes has joined the menu — not as an afterthought, but as a genuine extension of the kitchen's craft.\n\nWe close on Mondays and Tuesday midday. A kitchen that rests cooks better when it returns."},"menu":[{"category":"Soups","description":"Clear broths, silken textures, and the kind of warmth that settles you into the meal ahead.","items":[{"name":"Oriental Pepper Soup","subtitle":"Oosterse pepersoep","description":"A light, aromatic broth lifted by a clean, lingering heat.","price":"4.50"},{"name":"Swallow's Nest Soup","subtitle":"Zwaluwnestjessoep","description":"A delicate classic — silken and subtly sweet, steeped in tradition.","price":"4.50"},{"name":"Wonton Soup","subtitle":"Wan-Tan soep","description":"Plump pork-filled dumplings in a fragrant, ginger-kissed broth.","price":"5.50"},{"name":"Sui Gao Soup","subtitle":"Sui-Gao soep","description":"Shrimp dumplings in a clear, savoury broth — delicate and deeply satisfying.","price":"6.20"},{"name":"Chicken Soup with Bamboo & Mushrooms","subtitle":"Kippesoep met bamboes en champignons","description":"Tender chicken in a woodsy broth with bamboo shoots and forest mushrooms.","price":"4.50"},{"name":"Sweet Corn Soup with Chicken & Crab","subtitle":"Maïssoep met kip en krab","description":"A velvety corn bisque enriched with shredded chicken and delicate crab.","price":"5.00"}]},{"category":"Starters","description":"The meal begins here — crisp edges, tender centres, and flavours that set the tone for what follows.","items":[{"name":"Chicken Spring Rolls","subtitle":"Loempia's met kip","description":"Golden and shatteringly crisp, filled with seasoned chicken.","price":"4.50"},{"name":"Vietnamese Spring Rolls (Nems)","subtitle":"Vietnamese loempia's","description":"Tightly rolled, richly spiced — the crunch gives way to a fragrant filling.","price":"7.00"},{"name":"Chicken Satay","subtitle":"Kippensaté","description":"Chargrilled skewers served with a rich, house-made peanut sauce.","price":"7.50"},{"name":"Lotus Special Hors d'Oeuvre","subtitle":"Speciaal \"Lotus\" voorgerecht","description":"The kitchen's signature starter — a curated selection of house favourites.","price":"8.00"},{"name":"Grilled Shrimps with Spices","subtitle":"Gegrilde scampis met specerijen","description":"Plump scampi grilled over high heat with a perfumed spice blend.","price":"12.50"},{"name":"Soya Salad with Chicken","subtitle":"Sojasla met kip","description":"Crisp bean sprouts and tender chicken, tossed in a bright dressing.","price":"7.00"},{"name":"Peking Duck Salad","subtitle":"Sla van gelakte eend","description":"Lacquered duck atop fresh greens — rich, savoury, and refreshing in equal measure.","price":"8.00"},{"name":"Ha Gao — Steamed Shrimp Dumplings","subtitle":"Gestoomde garnalenraviolis","description":"Translucent wrappers encasing whole shrimp, steamed until just set.","price":"6.20"},{"name":"Sui Gao — Steamed Pork Dumplings","subtitle":"Bladerdeegpasteitjes met varkensvlees","description":"Juicy pork parcels, gently steamed and served piping hot.","price":"6.00"},{"name":"Dim Sum Assortment (4 Varieties)","subtitle":"Gevarieerde Dim-Sum (4 soorten)","description":"A carefully chosen selection of four steamed dumplings from the kitchen.","price":"6.20"}]},{"category":"Vegan","description":"Every dish in this section is fully vegan — crafted with the same care and attention as the rest of the menu.","items":[{"name":"Vegan Oriental Pepper Soup","subtitle":"Vegan Oosterse pepersoep","description":"A warming, plant-based broth with a gentle peppery finish.","price":"4.50"},{"name":"Sweet Corn Soup","subtitle":"Maïssoep","description":"Silky corn bisque, naturally sweet and deeply comforting.","price":"4.50"},{"name":"Vegetables with Yuca","subtitle":"Groenten met yuca","description":"Wok-fired seasonal vegetables with creamy, starchy yuca root.","price":"13.00"},{"name":"Vegetables with Cashew Nuts","subtitle":"Groenten met cashewnoten","description":"Crisp greens tossed with toasted cashews in a savoury glaze.","price":"13.00"},{"name":"Vegetables with Almond Slices","subtitle":"Groenten met amandelnoten","description":"Garden vegetables finished with toasted almond slivers for a delicate crunch.","price":"13.00"},{"name":"Vegetables with Pineapple","subtitle":"Groenten met ananas","description":"A bright, tropical contrast to wok-charred vegetables.","price":"12.00"},{"name":"Vegetables Kung Pao (Spicy)","subtitle":"Groenten in \"Kong-Po\"","description":"A fiery wok toss of vegetables with dried chillies and Sichuan aromatics.","price":"12.00"},{"name":"Vegetables with Black Beans","subtitle":"Groenten met zwarte bonen","description":"Earthy fermented black bean sauce coating fresh, wok-seared vegetables.","price":"12.00"},{"name":"Chop Suey Vegetables","subtitle":"Chop Shoy groenten","description":"Bean sprouts and mixed vegetables, stir-fried to a lively crunch.","price":"12.00"},{"name":"Vegetables with Chinese Mushrooms","subtitle":"Groenten met Chinese paddestoelen","description":"Woodsy shiitake and oyster mushrooms with seasonal greens.","price":"12.00"},{"name":"Assortment of Chinese Vegetables","subtitle":"Gemengde Chinese groenten","description":"A generous medley of Chinese greens, simply and beautifully prepared.","price":"12.00"},{"name":"Tofu with Vegetables","subtitle":"Tofu met groenten","description":"Silken tofu paired with crisp, wok-tossed seasonal vegetables.","price":"13.50"},{"name":"Fried Rice with Vegetables","subtitle":"Nasigoreng met groenten","description":"Fragrant jasmine rice, wok-fried with a rainbow of fresh vegetables.","price":"11.00"},{"name":"Fried Noodles with Vegetables","subtitle":"Bamigoreng met groenten","description":"Egg-free noodles charred in a hot wok with garden-fresh vegetables.","price":"11.00"},{"name":"Fried Vermicelli with Vegetables","subtitle":"Vermicelli met groenten","description":"Glass noodles, light and springy, tossed with stir-fried vegetables.","price":"11.00"}]},{"category":"Seafood","description":"From the wok to the table — scampi, squid, and the ocean's best, cooked with precision and respect.","items":[{"name":"Chop Suey with Shrimps","subtitle":"Chop Shoy scampis","description":"Bean sprouts and scampi in a quick, high-heat stir-fry.","price":"16.90"},{"name":"Squid with Spicy Sauce","subtitle":"Inktvis in pikante saus","description":"Tender squid rings coated in a bold, chilli-laced sauce.","price":"14.20"},{"name":"Shrimps with Mixed Vegetables","subtitle":"Scampis met diverse groenten","description":"Plump scampi wok-tossed with a colourful array of crisp vegetables.","price":"16.90"},{"name":"Fried Shrimps with Sweet & Sour Sauce","subtitle":"Gebakken scampis met zoetzure saus","description":"Lightly battered and fried, draped in a glossy sweet-and-sour glaze.","price":"14.90"},{"name":"Shrimps with Chinese Mushrooms","subtitle":"Scampis met Chinese paddestoelen","description":"Scampi paired with earthy shiitake in a rich, savoury sauce.","price":"16.90"},{"name":"Shrimps with Curry Sauce","subtitle":"Scampis in currysaus","description":"Succulent scampi swimming in a golden, aromatic curry.","price":"16.90"},{"name":"Ming Shrimps (Tomato Sauce)","subtitle":"\"Ming\" scampis","description":"A house classic — scampi in a vibrant, lightly spiced tomato sauce.","price":"16.90"},{"name":"Mixed Seafood Cantonese Style","subtitle":"Zeevruchten huisschotel","description":"The kitchen's signature seafood platter — a generous Cantonese-style marmite.","price":"17.90"}]},{"category":"Poultry","description":"Tender chicken, wok-seared and sauced — from the familiar comfort of sweet and sour to the bold heat of Kung Pao.","items":[{"name":"Fried Chicken with Sweet & Sour Sauce","subtitle":"Gepaneerde kippenreepjes met zoetzure saus","description":"Crisp-coated chicken pieces in a bright, tangy sweet-and-sour glaze.","price":"12.50"},{"name":"Chicken with Curry Sauce","subtitle":"Kippenreepjes in currysaus","description":"Tender chicken strips enveloped in a fragrant, golden curry.","price":"12.50"},{"name":"Chicken with Lemon Sauce","subtitle":"Kippenreepjes met citroensaus","description":"A citrus-bright sauce cuts through the richness of perfectly cooked chicken.","price":"13.50"},{"name":"Chicken with Cashew Nuts","subtitle":"Kippenreepjes met cashewnoten","description":"Wok-tossed chicken and toasted cashews in a savoury brown sauce.","price":"13.50"},{"name":"Chicken with Almond Slices","subtitle":"Kippenreepjes met amandelschijfjes","description":"Tender chicken crowned with crisp, golden almond slivers.","price":"13.50"},{"name":"Chicken with Pineapple","subtitle":"Kippenreepjes met ananas","description":"Sweet pineapple and savoury chicken — a timeless pairing.","price":"12.50"},{"name":"Kung Pao Chicken (Spicy)","subtitle":"Kippenreepjes in \"Kong-Po\"","description":"Fiery, aromatic, and deeply addictive — dried chillies, peanuts, and seared chicken.","price":"12.50"},{"name":"Chicken with Black Beans","subtitle":"Kippenreepjes met zwarte bonen","description":"Fermented black bean sauce lends a deep, umami-rich character.","price":"12.50"},{"name":"Chop Suey with Chicken","subtitle":"Chop Shoy kip","description":"Bean sprouts and chicken, wok-fried to a satisfying crunch.","price":"12.50"}]},{"category":"Duck","description":"Roasted, lacquered, and served with ceremony. Our duck is prepared in the Cantonese and Peking traditions.","items":[{"name":"Peking Duck with Pancakes & Sauce","subtitle":"Gebraden Peking eend","description":"The centrepiece — crisp-skinned duck carved tableside, wrapped in thin pancakes with house sauce.","price":"16.90"},{"name":"Cantonese Duck","subtitle":"Eend op Cantonese wijze","description":"Lacquered and slow-roasted in the Cantonese style — rich, glossy, and deeply flavoured.","price":"17.90"},{"name":"Roast Duck with Orange","subtitle":"Gebraden eend met sinaasappel","description":"Succulent roast duck in a bittersweet orange sauce — a timeless combination.","price":"16.90"},{"name":"Roast Duck with Pineapple","subtitle":"Gebraden eend met ananas","description":"Tropical sweetness meets the savoury depth of slow-roasted duck.","price":"16.90"},{"name":"Roast Duck with Chinese Mushrooms","subtitle":"Gebraden eend met Chinese paddestoelen","description":"Earthy shiitake and oyster mushrooms alongside tender, lacquered duck.","price":"16.90"},{"name":"Roast Duck with Eight Delicacies","subtitle":"Gebraden eend met acht heerlijkheden","description":"An opulent dish — roast duck accompanied by a medley of eight treasured ingredients.","price":"16.90"},{"name":"Roast Duck with Curry Sauce","subtitle":"Gebraden eend met currysaus","description":"Rich duck paired with a warm, golden curry — bold and aromatic.","price":"16.90"}]},{"category":"Beef","description":"Thinly sliced and wok-seared at the highest heat. Every cut is treated with precision.","items":[{"name":"Chop Suey with Beef","subtitle":"Chop Shoy met rundvlees","description":"Seared beef and bean sprouts, quick-fried to preserve their bite.","price":"14.50"},{"name":"Beef with Hot Sauce","subtitle":"Rundvlees in pikante saus","description":"Tender slices in a bold, chilli-fired sauce that builds with each bite.","price":"14.50"},{"name":"Beef with Chinese Mushrooms","subtitle":"Rundvlees met Chinese paddestoelen","description":"Woodsy mushrooms and seared beef in a deep, savoury glaze.","price":"14.50"},{"name":"Beef with Onions","subtitle":"Rundvlees met uien","description":"Caramelised onions and seared beef — simple, satisfying, and rich.","price":"14.50"},{"name":"Beef with Curry Sauce","subtitle":"Rundvlees in currysaus","description":"Fragrant curry sauce wrapping tender, wok-seared beef slices.","price":"14.50"},{"name":"Beef with Oyster Sauce","subtitle":"Rundvlees in oestersaus","description":"A Cantonese staple — silky oyster sauce and perfectly seared beef.","price":"14.50"}]},{"category":"Pork","description":"From crisp sweet-and-sour to honey-lacquered barbecue — pork prepared with care and character.","items":[{"name":"Fried Pork with Sweet & Sour Sauce","subtitle":"Varkenblokjes met zoetzure saus","description":"Crisp pork pieces draped in a glossy, tangy-sweet sauce.","price":"12.50"},{"name":"Pork with Mixed Vegetables","subtitle":"Varkensvlees met groenten","description":"Tender pork stir-fried with a garden's worth of fresh vegetables.","price":"12.50"},{"name":"Barbecued Pork with Honey","subtitle":"Gelakte varkensvlees met honing","description":"Char-edged, honey-lacquered pork — smoky, sweet, and irresistible.","price":"13.00"},{"name":"Babi Pangang (Roasted Pork)","subtitle":"Babi Pangang","description":"A beloved classic — roasted pork in a rich, spiced sauce.","price":"13.50"}]},{"category":"Rice & Noodles","description":"The foundation of every Chinese table. Wok-fried over high flame, served generous and steaming.","items":[{"name":"Fried Rice with Chicken","subtitle":"Nasigoreng met kip","description":"Fragrant jasmine rice, wok-tossed with tender chicken and aromatics.","price":"11.50"},{"name":"Fried Rice with Pork","subtitle":"Nasigoreng met varkensvlees","description":"Classic nasi goreng with savoury pork and a whisper of soy.","price":"11.50"},{"name":"Fried Rice with Beef","subtitle":"Nasigoreng met rundvlees","description":"Seared beef strips folded through fragrant, wok-charred rice.","price":"13.50"},{"name":"Fried Rice with Shrimps","subtitle":"Nasigoreng met scampis","description":"Plump scampi and jasmine rice, kissed by the wok's flame.","price":"15.90"},{"name":"Fried Rice Special","subtitle":"Nasigoreng speciaal","description":"The kitchen's best — a generous mix of meats, shrimp, and vegetables over rice.","price":"14.20"},{"name":"Fried Noodles with Chicken","subtitle":"Bamigoreng met kip","description":"Springy egg noodles, charred in the wok with tender chicken.","price":"11.50"},{"name":"Fried Noodles with Pork","subtitle":"Bamigoreng met varkensvlees","description":"Smoky, wok-fired noodles with savoury pork and crisp vegetables.","price":"11.50"},{"name":"Fried Noodles with Beef","subtitle":"Bamigoreng met rundvlees","description":"Charred noodles and seared beef — hearty and deeply satisfying.","price":"13.50"},{"name":"Fried Noodles with Shrimps","subtitle":"Bamigoreng met scampis","description":"Scampi and noodles, tossed in a hot wok until perfectly smoky.","price":"15.90"},{"name":"Fried Noodles Special","subtitle":"Bamigoreng speciaal","description":"A showpiece of the wok — mixed proteins, fresh vegetables, and springy noodles.","price":"14.00"},{"name":"Cantonese Vermicelli","subtitle":"Vermicelli op \"Cantonese wijze\"","description":"Glass noodles prepared in the Cantonese tradition — light, fragrant, and nuanced.","price":"14.20"},{"name":"Noodle Soup (Chicken, Pork, or Beef)","subtitle":"Noedel in bouillon","description":"Wheat noodles in a steaming, savoury broth — choose your protein.","price":"13.50"},{"name":"Special Noodle Soup","subtitle":"Noedel Speciaal in bouillon","description":"A loaded bowl — rich broth, springy noodles, and a generous mix of toppings.","price":"14.50"}]},{"category":"House Specialties","description":"The dishes we are most proud of. Sizzling Ti-Pan platters, imperial ribs, and the kitchen's greatest hits.","items":[{"name":"Imperial Spare Ribs","subtitle":"Ribbetjes op keizerlijke wijze","description":"Slow-cooked ribs finished in an imperial glaze — tender, sticky, and regal.","price":"13.50"},{"name":"Ti-Pan Beef","subtitle":"Rundvlees op Ti-Pan","description":"Seared beef served sizzling on a cast-iron platter — dramatic and delicious.","price":"15.00"},{"name":"Ti-Pan Chicken","subtitle":"Kippenreepjes op Ti-Pan","description":"Chicken sizzling on the hot plate with wok-charred vegetables.","price":"13.50"},{"name":"Ti-Pan Shrimps","subtitle":"Scampis op Ti-Pan","description":"Plump scampi arriving at the table on a sizzling, smoking platter.","price":"17.50"},{"name":"Ti-Pan Duck","subtitle":"Eend op Ti-Pan","description":"Lacquered duck, seared and served sizzling — a feast for every sense.","price":"17.50"},{"name":"Frog's Legs with Spices","subtitle":"Kikkerbillen geparfumeerd met specerijen","description":"Delicate frog's legs perfumed with a fragrant blend of spices.","price":"15.90"},{"name":"Grilled Spare Ribs with Garlic","subtitle":"Gegrilde ribbetjes met look","description":"Chargrilled ribs with a bold, unapologetic garlic finish.","price":"13.00"},{"name":"Chinese Family Dish (Slightly Spicy)","subtitle":"Chinese familie schotel","description":"A sharing platter built for the whole table — mixed meats in a warming, lightly spiced sauce.","price":"14.70"},{"name":"Eight Delicacies (Slightly Spicy)","subtitle":"Verschillende vlees \"acht heerlijkheden\"","description":"An assortment of meats with eight treasured ingredients — lightly spiced, deeply layered.","price":"14.70"}]}],"contact":{"address":"Av. des Anciens Combattants 81, 1950 Kraainem","phone":"02 721 98 33","hours":{"summary":"Tuesday evening through Sunday","detail":[{"days":"Tuesday","times":"18:00 – 21:30"},{"days":"Wednesday – Sunday","times":"12:00 – 14:00 & 18:00 – 21:30"},{"days":"Monday & Tuesday noon","times":"Closed"}],"note":"Open on public holidays"}},"footer_tagline":"Lotus — Kraainem's Chinese table since day one."};
+
+    /* ========================================
+       Render Functions
+       ======================================== */
+
+    function renderAbout(lang) {
+      lang = lang || currentLang;
+      const container = document.getElementById('about-body');
+      const body = getT(lang, 'about.body');
+      const paragraphs = body.split('\n\n');
+      container.innerHTML = paragraphs.map(p => '<p>' + escapeHtml(p) + '</p>').join('');
+    }
+
+    function renderMenu(lang) {
+      lang = lang || currentLang;
+      const tabsContainer = document.getElementById('menu-tabs');
+      const panelsContainer = document.getElementById('menu-panels');
+      const cats = TRANSLATIONS[lang].menuCategories;
+
+      // Remember active tab index before clearing
+      const activeTab = tabsContainer.querySelector('.menu__tab.active');
+      const activeIndex = activeTab ? parseInt(activeTab.id.replace('tab-', '')) : 0;
+
+      tabsContainer.innerHTML = '';
+      panelsContainer.innerHTML = '';
+
+      SITE_DATA.menu.forEach((cat, i) => {
+        const tabId = 'tab-' + i;
+        const panelId = 'panel-' + i;
+        const t = cats[i] || { name: cat.category, description: cat.description };
+
+        const isActive = i === activeIndex;
+        const tab = document.createElement('button');
+        tab.className = 'menu__tab' + (isActive ? ' active' : '');
+        tab.setAttribute('role', 'tab');
+        tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        tab.setAttribute('aria-controls', panelId);
+        tab.id = tabId;
+        tab.textContent = t.name;
+        tabsContainer.appendChild(tab);
+
+        const panel = document.createElement('div');
+        panel.className = 'menu__category' + (isActive ? ' active' : '');
+        panel.setAttribute('role', 'tabpanel');
+        panel.setAttribute('aria-labelledby', tabId);
+        panel.id = panelId;
+
+        let html = '<p class="menu__category-desc">' + escapeHtml(t.description) + '</p>';
+        html += '<div class="menu__items">';
+
+        cat.items.forEach(item => {
+          const itemName = lang === 'nl' ? item.subtitle : item.name;
+          html += '<div class="menu__item">';
+          html += '<div class="menu__item-header">';
+          html += '<span class="menu__item-name">' + escapeHtml(itemName) + '</span>';
+          html += '<span class="menu__item-price">&euro;' + escapeHtml(item.price) + '</span>';
+          html += '</div>';
+          const itemDesc = (lang !== 'en' && ITEM_TRANSLATIONS[lang] && ITEM_TRANSLATIONS[lang][item.name])
+            ? ITEM_TRANSLATIONS[lang][item.name]
+            : item.description;
+          html += '<div class="menu__item-desc">' + escapeHtml(itemDesc) + '</div>';
+          html += '</div>';
+        });
+
+        html += '</div>';
+        panel.innerHTML = html;
+        panelsContainer.appendChild(panel);
+      });
+
+      // Tab click handling
+      tabsContainer.addEventListener('click', function(e) {
+        const tab = e.target.closest('.menu__tab');
+        if (!tab) return;
+        tabsContainer.querySelectorAll('.menu__tab').forEach(t => {
+          t.classList.remove('active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        panelsContainer.querySelectorAll('.menu__category').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        tab.setAttribute('aria-selected', 'true');
+        const panel = document.getElementById(tab.getAttribute('aria-controls'));
+        if (panel) panel.classList.add('active');
+      });
+    }
+
+    function renderContact(lang) {
+      lang = lang || currentLang;
+      const container = document.getElementById('contact-content');
+      const c = SITE_DATA.contact;
+      const t = TRANSLATIONS[lang].contact;
+
+      let hoursHtml = '<div class="contact__hours-table">';
+      t.hourRows.forEach(row => {
+        const isClosed = row.times === 'Closed' || row.times === 'Ferm\u00e9' || row.times === 'Gesloten';
+        hoursHtml += '<div class="contact__hours-row">';
+        hoursHtml += '<span class="contact__hours-day">' + escapeHtml(row.days) + '</span>';
+        hoursHtml += '<span class="contact__hours-time' + (isClosed ? ' contact__hours-time--closed' : '') + '">' + escapeHtml(row.times) + '</span>';
+        hoursHtml += '</div>';
+      });
+      hoursHtml += '</div>';
+      if (t.note) {
+        hoursHtml += '<p class="contact__hours-note">' + escapeHtml(t.note) + '</p>';
+      }
+
+      container.innerHTML =
+        '<div class="contact__block">' +
+          '<h3>' + escapeHtml(t.address) + '</h3>' +
+          '<p class="contact__address">' + escapeHtml(c.address) + '</p>' +
+          '<p class="contact__phone">Tel: <a href="tel:+3227219833">' + escapeHtml(c.phone) + '</a></p>' +
+          '<a href="https://www.google.com/maps/search/?api=1&query=Av.+des+Anciens+Combattants+81+1950+Kraainem" target="_blank" rel="noopener noreferrer" class="contact__map-link">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>' +
+            escapeHtml(t.mapLink) +
+          '</a>' +
+        '</div>' +
+        '<div class="contact__block">' +
+          '<h3>' + escapeHtml(t.hours) + '</h3>' +
+          '<p class="contact__hours-title">' + escapeHtml(t.summary) + '</p>' +
+          hoursHtml +
+        '</div>';
+    }
+
+    function renderFooter(lang) {
+      lang = lang || currentLang;
+      document.getElementById('footer-tagline').textContent = TRANSLATIONS[lang].footer;
+      const year = new Date().getFullYear();
+      document.getElementById('footer-meta').innerHTML =
+        '&copy; ' + year + ' ' + escapeHtml(SITE_DATA.meta.restaurant_name) + ' ' + SITE_DATA.meta.chinese_name +
+        '<br>TVA: ' + escapeHtml(SITE_DATA.meta.vat);
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    /* ========================================
+       Scroll-aware Navigation
+       ======================================== */
+    function initThemeToggle() {
+      const toggle = document.getElementById('theme-toggle');
+      const saved = localStorage.getItem('lotus-theme');
+      if (saved === 'light') document.documentElement.classList.add('light');
+
+      toggle.addEventListener('click', () => {
+        const isLight = document.documentElement.classList.toggle('light');
+        localStorage.setItem('lotus-theme', isLight ? 'light' : 'dark');
+      });
+    }
+
+    function initNav() {
+      const nav = document.querySelector('.nav');
+      const toggle = document.querySelector('.nav__toggle');
+      const overlay = document.querySelector('.nav__overlay');
+      const overlayLinks = overlay.querySelectorAll('a');
+
+      window.addEventListener('scroll', function() {
+        nav.classList.toggle('scrolled', window.scrollY > 80);
+      }, { passive: true });
+
+      toggle.addEventListener('click', function() {
+        const isOpen = overlay.classList.toggle('open');
+        toggle.classList.toggle('active', isOpen);
+        toggle.setAttribute('aria-expanded', isOpen);
+        overlay.setAttribute('aria-hidden', !isOpen);
+        document.body.style.overflow = isOpen ? 'hidden' : '';
+      });
+
+      overlayLinks.forEach(link => {
+        link.addEventListener('click', function() {
+          overlay.classList.remove('open');
+          toggle.classList.remove('active');
+          toggle.setAttribute('aria-expanded', 'false');
+          overlay.setAttribute('aria-hidden', 'true');
+          document.body.style.overflow = '';
+        });
+      });
+    }
+
+    /* ========================================
+       Smooth Scroll
+       ======================================== */
+    function initSmoothScroll() {
+      document.querySelectorAll('a[href^="#"]').forEach(link => {
+        link.addEventListener('click', function(e) {
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+      });
+    }
+
+    /* ========================================
+       Intersection Observer Animations
+       ======================================== */
+    function initAnimations() {
+      const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -80px 0px' });
+
+      document.querySelectorAll('[data-animate]').forEach(el => {
+        observer.observe(el);
+      });
+    }
+
+    /* ========================================
+       Menu Item Description Translations
+       ======================================== */
+    const ITEM_TRANSLATIONS = {
+      fr: {
+        "Oriental Pepper Soup": "Un bouillon l\u00e9ger et aromatique rehaussé d'une chaleur nette et persistante.",
+        "Swallow's Nest Soup": "Un grand classique d\u00e9licat \u2014 soyeux et subtilement sucr\u00e9, impregn\u00e9 de tradition.",
+        "Wonton Soup": "Des raviolis farcis au porc dans un bouillon parfum\u00e9 au gingembre.",
+        "Sui Gao Soup": "Des raviolis aux crevettes dans un bouillon clair et savoureux \u2014 d\u00e9licat et profond\u00e9ment satisfaisant.",
+        "Chicken Soup with Bamboo & Mushrooms": "Poulet tendre dans un bouillon bois\u00e9 aux pousses de bambou et champignons des for\u00eats.",
+        "Sweet Corn Soup with Chicken & Crab": "Un velouté de ma\u00efs crémeux enrichi de poulet effiloché et de crabe d\u00e9licat.",
+        "Chicken Spring Rolls": "Dorés et croustillants à souhait, fourrés de poulet assaisonné.",
+        "Vietnamese Spring Rolls (Nems)": "Bien roul\u00e9s, richement \u00e9pices \u2014 le croustillant cède à une garniture parfum\u00e9e.",
+        "Chicken Satay": "Brochettes grillées servies avec une sauce satay maison généreuse.",
+        "Lotus Special Hors d'Oeuvre": "L'entr\u00e9e signature de la cuisine \u2014 une s\u00e9lection compos\u00e9e de favoris maison.",
+        "Grilled Shrimps with Spices": "Grosses crevettes grillées à feu vif avec un mélange d'épices parfumées.",
+        "Soya Salad with Chicken": "Germes de soja croquants et poulet tendre, assaisonnés d'une vinaigrette légère.",
+        "Peking Duck Salad": "Canard laqué sur jeunes pousses \u2014 riche, savoureux et rafra\u00eechissant à la fois.",
+        "Ha Gao \u2014 Steamed Shrimp Dumplings": "Fines enveloppes translucides renfermant des crevettes entières, cuites à la vapeur.",
+        "Sui Gao \u2014 Steamed Pork Dumplings": "Aumônières de porc juteuses, cuites doucement à la vapeur et servies bien chaudes.",
+        "Dim Sum Assortment (4 Varieties)": "Une sélection soigneusement choisie de quatre raviolis vapeur de la cuisine.",
+        "Vegan Oriental Pepper Soup": "Un bouillon végétal réconfortant avec une touche poivrée douce.",
+        "Sweet Corn Soup": "Velouté de maïs soyeux, naturellement sucré et profondément réconfortant.",
+        "Vegetables with Yuca": "Légumes de saison sautés au wok avec du manioc crémeux et féculent.",
+        "Vegetables with Cashew Nuts": "Légumes croquants mélangés à des noix de cajou grillées dans un glaçage savoureux.",
+        "Vegetables with Almond Slices": "Légumes du jardin agrémentés d'effilés d'amandes grillées pour un croquant délicat.",
+        "Vegetables with Pineapple": "Un contraste tropical et lumineux aux légumes caramélisés au wok.",
+        "Vegetables Kung Pao (Spicy)": "Un sauté enflammé de légumes aux piments séchés et arômes du Sichuan.",
+        "Vegetables with Black Beans": "Sauce aux haricots noirs fermentés enrobant des légumes frais sautés au wok.",
+        "Chop Suey Vegetables": "Germes de soja et légumes mélangés, sautés jusqu'à un croquant vivace.",
+        "Vegetables with Chinese Mushrooms": "Shiitaké et pleurotes boisés avec des légumes de saison.",
+        "Assortment of Chinese Vegetables": "Un généreux mélange de légumes chinois, simplement et magnifiquement préparé.",
+        "Tofu with Vegetables": "Tofu soyeux accompagné de légumes de saison croquants sautés au wok.",
+        "Fried Rice with Vegetables": "Riz jasmin parfumé, sauté au wok avec un arc-en-ciel de légumes frais.",
+        "Fried Noodles with Vegetables": "Nouilles sans \u0153uf carbonisées dans un wok brûlant avec des légumes du jardin.",
+        "Fried Vermicelli with Vegetables": "Vermicelles de verre, légers et élastiques, sautés avec des légumes.",
+        "Chop Suey with Shrimps": "Germes de soja et crevettes dans un sauté rapide à feu vif.",
+        "Squid with Spicy Sauce": "Anneaux de calmars tendres enrobés d'une sauce audacieuse relevée au piment.",
+        "Shrimps with Mixed Vegetables": "Grosses crevettes sautées au wok avec un assortiment coloré de légumes croquants.",
+        "Fried Shrimps with Sweet & Sour Sauce": "Légèrement panées et frites, nappées d'un glaçage aigre-doux brillant.",
+        "Shrimps with Chinese Mushrooms": "Crevettes associées à des shiitakés terreux dans une sauce riche et savoureuse.",
+        "Shrimps with Curry Sauce": "Succulentes crevettes nageant dans un curry doré et aromatique.",
+        "Ming Shrimps (Tomato Sauce)": "Un classique maison \u2014 crevettes dans une sauce tomate vive et légèrement épicée.",
+        "Mixed Seafood Cantonese Style": "Le plat de fruits de mer signature de la cuisine \u2014 une généreuse marmite cantonaise.",
+        "Fried Chicken with Sweet & Sour Sauce": "Morceaux de poulet croustillants dans un glaçage aigre-doux brillant et fruité.",
+        "Chicken with Curry Sauce": "Lamelles de poulet tendre enveloppées dans un curry parfumé et doré.",
+        "Chicken with Lemon Sauce": "Une sauce citronnée lumineuse tranche la richesse d'un poulet parfaitement cuit.",
+        "Chicken with Cashew Nuts": "Poulet sauté et noix de cajou grillées dans une sauce brune savoureuse.",
+        "Chicken with Almond Slices": "Poulet tendre couronné d'amandes effilées dorées et croquantes.",
+        "Chicken with Pineapple": "Ananas sucré et poulet savoureux \u2014 une association intemporelle.",
+        "Kung Pao Chicken (Spicy)": "Ardent, aromatique et profondément addictif \u2014 piments séchés, cacahuètes et poulet grillé.",
+        "Chicken with Black Beans": "La sauce aux haricots noirs fermentés apporte un caractère profond et umami.",
+        "Chop Suey with Chicken": "Germes de soja et poulet, sautés au wok jusqu'à un croquant satisfaisant.",
+        "Peking Duck with Pancakes & Sauce": "La pièce maîtresse \u2014 canard à la peau croustillante découpé en salle, roulé dans des crêpes avec sauce maison.",
+        "Cantonese Duck": "Laqué et rôti lentement à la mode cantonaise \u2014 riche, brillant et profondément parfumé.",
+        "Roast Duck with Orange": "Canard rôti juteux dans une sauce à l'orange douce-amère \u2014 une combinaison intemporelle.",
+        "Roast Duck with Pineapple": "La douceur tropicale rencontre la profondeur savoureuse du canard rôti lentement.",
+        "Roast Duck with Chinese Mushrooms": "Shiitakés et pleurotes terreux aux côtés d'un canard tendre et laqué.",
+        "Roast Duck with Eight Delicacies": "Un plat opulent \u2014 canard rôti accompagné d'un mélange de huit ingrédients précieux.",
+        "Roast Duck with Curry Sauce": "Canard riche associé à un curry chaud et doré \u2014 audacieux et aromatique.",
+        "Chop Suey with Beef": "Bœuf saisi et germes de soja, sautés rapidement pour préserver leur texture.",
+        "Beef with Hot Sauce": "Tranches tendres dans une sauce audacieuse et pimentée qui s'intensifie à chaque bouchée.",
+        "Beef with Chinese Mushrooms": "Champignons boisés et bœuf grillé dans un glaçage profond et savoureux.",
+        "Beef with Onions": "Oignons caramélisés et bœuf grillé \u2014 simple, satisfaisant et riche.",
+        "Beef with Curry Sauce": "Sauce curry parfumée enveloppant de tendres tranches de bœuf sauté au wok.",
+        "Beef with Oyster Sauce": "Un classique cantonais \u2014 sauce aux huîtres soyeuse et bœuf parfaitement grillé.",
+        "Fried Pork with Sweet & Sour Sauce": "Morceaux de porc croustillants nappés d'une sauce aigre-douce brillante.",
+        "Pork with Mixed Vegetables": "Porc tendre sauté avec une abondance de légumes frais.",
+        "Barbecued Pork with Honey": "Porc laqué au miel avec des bords carbonisés \u2014 fumé, sucré et irrésistible.",
+        "Babi Pangang (Roasted Pork)": "Un classique bien-aimé \u2014 porc rôti dans une sauce riche et épicée.",
+        "Fried Rice with Chicken": "Riz jasmin parfumé, sauté au wok avec du poulet tendre et des arômes.",
+        "Fried Rice with Pork": "Nasi goreng classique au porc savoureux et à une touche de soja.",
+        "Fried Rice with Beef": "Lanières de bœuf grillées incorporées dans un riz parfumé carbonisé au wok.",
+        "Fried Rice with Shrimps": "Grosses crevettes et riz jasmin, embrasés par la flamme du wok.",
+        "Fried Rice Special": "Le meilleur de la cuisine \u2014 un généreux mélange de viandes, crevettes et légumes sur riz.",
+        "Fried Noodles with Chicken": "Nouilles aux \u0153ufs élastiques, carbonisées au wok avec du poulet tendre.",
+        "Fried Noodles with Pork": "Nouilles fumées sautées au wok avec du porc savoureux et des légumes croquants.",
+        "Fried Noodles with Beef": "Nouilles carbonisées et bœuf grillé \u2014 consistant et profondément satisfaisant.",
+        "Fried Noodles with Shrimps": "Crevettes et nouilles, sautées dans un wok brûlant jusqu'à être parfaitement fumées.",
+        "Fried Noodles Special": "Le clou du wok \u2014 protéines mixtes, légumes frais et nouilles élastiques.",
+        "Cantonese Vermicelli": "Vermicelles de verre préparés à la mode cantonaise \u2014 légers, parfumés et nuancés.",
+        "Noodle Soup (Chicken, Pork, or Beef)": "Nouilles de blé dans un bouillon chaud et savoureux \u2014 choisissez votre protéine.",
+        "Special Noodle Soup": "Un bol généreux \u2014 bouillon riche, nouilles élastiques et un mélange généreux de garnitures.",
+        "Imperial Spare Ribs": "Ribs cuits lentement et finis dans un glaçage impérial \u2014 tendres, collants et royaux.",
+        "Ti-Pan Beef": "Bœuf grillé servi grésillant sur une plaque en fonte \u2014 spectaculaire et délicieux.",
+        "Ti-Pan Chicken": "Poulet grésillant sur la plaque chaude avec des légumes carbonisés au wok.",
+        "Ti-Pan Shrimps": "Grosses crevettes arrivant à table sur une plaque grésillante et fumante.",
+        "Ti-Pan Duck": "Canard laqué, grillé et servi grésillant \u2014 un festin pour tous les sens.",
+        "Frog's Legs with Spices": "Délicates cuisses de grenouille parfumées à un mélange d'épices aromatiques.",
+        "Grilled Spare Ribs with Garlic": "Ribs grillés avec une touche d'ail audacieuse et sans compromis.",
+        "Chinese Family Dish (Slightly Spicy)": "Un plat à partager pour toute la table \u2014 viandes mixtes dans une sauce légèrement épicée.",
+        "Eight Delicacies (Slightly Spicy)": "Un assortiment de viandes aux huit ingrédients précieux \u2014 légèrement épicé, profondément savoureux."
+      },
+      nl: {
+        "Oriental Pepper Soup": "Een licht, aromatisch bouillon verlevendigd door een aanhoudende, zachte hitte.",
+        "Swallow's Nest Soup": "Een delicaat klassiek gerecht \u2014 zijdezacht en subtiel zoet, doordrongen van traditie.",
+        "Wonton Soup": "Gevulde ravioli met varkensvlees in een geurige bouillon met gember.",
+        "Sui Gao Soup": "Garnalenravioli in een heldere, hartige bouillon \u2014 delicaat en diep bevredigend.",
+        "Chicken Soup with Bamboo & Mushrooms": "Malse kip in een bossige bouillon met bamboescheuten en bospaddenstoelen.",
+        "Sweet Corn Soup with Chicken & Crab": "Een romige ma\u00efsbisque verrijkt met fijngehakte kip en delicate krab.",
+        "Chicken Spring Rolls": "Goudbruin en heerlijk knapperig, gevuld met gekruide kip.",
+        "Vietnamese Spring Rolls (Nems)": "Strak opgerold, rijkelijk gekruid \u2014 de knapperige korst geeft toe aan een geurige vulling.",
+        "Chicken Satay": "Gegrilde spiesjes geserveerd met een rijke, huisgemaakte pindasaus.",
+        "Lotus Special Hors d'Oeuvre": "Het signatuurgerecht van de keuken \u2014 een samengestelde selectie van huisfavorieten.",
+        "Grilled Shrimps with Spices": "Grote scampi gegrild op hoge temperatuur met een geparfumeerd kruidenmengsel.",
+        "Soya Salad with Chicken": "Knapperige taugé en malse kip, aangemaakt met een frisse dressing.",
+        "Peking Duck Salad": "Gelakte eend op verse groenten \u2014 rijk, hartig en verfrissend tegelijk.",
+        "Ha Gao \u2014 Steamed Shrimp Dumplings": "Doorzichtige deegvellen gevuld met hele garnalen, gestoomd tot net gaar.",
+        "Sui Gao \u2014 Steamed Pork Dumplings": "Sappige varkenspakketjes, zachtjes gestoomd en gloeiend heet geserveerd.",
+        "Dim Sum Assortment (4 Varieties)": "Een zorgvuldig samengestelde selectie van vier gestoomde dumplings uit de keuken.",
+        "Vegan Oriental Pepper Soup": "Een verwarmende, plantaardige bouillon met een zachte pepersmaak.",
+        "Sweet Corn Soup": "Zijdezachte ma\u00efsbisque, natuurlijk zoet en diep troostend.",
+        "Vegetables with Yuca": "Wokgebakken seizoensgroenten met romige, zetmeelrijke yucawortel.",
+        "Vegetables with Cashew Nuts": "Knapperige groenten met geroosterde cashewnoten in een hartig glazuur.",
+        "Vegetables with Almond Slices": "Tuingroenten afgewerkt met geroosterde amandelschilfertjes voor een delicate knapperigheid.",
+        "Vegetables with Pineapple": "Een helder, tropisch contrast met wokgeblakerde groenten.",
+        "Vegetables Kung Pao (Spicy)": "Een vurige wokbereiding van groenten met gedroogde chilipepers en Sichuan-aroma\u2019s.",
+        "Vegetables with Black Beans": "Aardse gefermenteerde zwarte bonensaus met verse, wokgebakken groenten.",
+        "Chop Suey Vegetables": "Taugé en gemengde groenten, roergebakken tot een levendige knapperigheid.",
+        "Vegetables with Chinese Mushrooms": "Bossige shiitake en oesterzwammen met seizoensgroenten.",
+        "Assortment of Chinese Vegetables": "Een genereuze mix van Chinese groenten, eenvoudig en prachtig bereid.",
+        "Tofu with Vegetables": "Zachte tofu gecombineerd met knapperige, wokgebakken seizoensgroenten.",
+        "Fried Rice with Vegetables": "Geurige jasmijnrijst, wokgebakken met een regenboog van verse groenten.",
+        "Fried Noodles with Vegetables": "Eivrije noedels geblakerd in een hete wok met tuinverse groenten.",
+        "Fried Vermicelli with Vegetables": "Glasnoedels, licht en veerkrachtig, gebakken met roergebakken groenten.",
+        "Chop Suey with Shrimps": "Taugé en scampi in een snelle roerbak op hoog vuur.",
+        "Squid with Spicy Sauce": "Malse inktvisringen bedekt in een gedurfde, pikante saus.",
+        "Shrimps with Mixed Vegetables": "Grote scampi wokgebakken met een kleurrijke reeks knapperige groenten.",
+        "Fried Shrimps with Sweet & Sour Sauce": "Licht gepaneerd en gebakken, overgoten met een glanzende zoetzure glaze.",
+        "Shrimps with Chinese Mushrooms": "Scampi gecombineerd met aardse shiitake in een rijke, hartige saus.",
+        "Shrimps with Curry Sauce": "Sappige scampi in een gouden, aromatische curry.",
+        "Ming Shrimps (Tomato Sauce)": "Een huisklassiek \u2014 scampi in een levendige, licht gekruide tomatensaus.",
+        "Mixed Seafood Cantonese Style": "Het signatuur zeevruchtenbord \u2014 een royale Cantonese marmite.",
+        "Fried Chicken with Sweet & Sour Sauce": "Knapperige kipstukjes in een heldere, zoetzure glaze.",
+        "Chicken with Curry Sauce": "Malse kippenreepjes omhuld in een geurige, gouden curry.",
+        "Chicken with Lemon Sauce": "Een citrusachtige saus snijdt door de rijkheid van perfect bereide kip.",
+        "Chicken with Cashew Nuts": "Wokgebakken kip en geroosterde cashewnoten in een hartige bruine saus.",
+        "Chicken with Almond Slices": "Malse kip gekroond met knapperige, gouden amandelschilfertjes.",
+        "Chicken with Pineapple": "Zoete ananas en hartige kip \u2014 een tijdloze combinatie.",
+        "Kung Pao Chicken (Spicy)": "Vurig, aromatisch en diep verslavend \u2014 gedroogde chilipepers, pinda\u2019s en gegrilde kip.",
+        "Chicken with Black Beans": "Gefermenteerde zwarte bonensaus geeft een diepe, umami-rijke karakter.",
+        "Chop Suey with Chicken": "Taugé en kip, wokgebakken tot een bevredigende knapperigheid.",
+        "Peking Duck with Pancakes & Sauce": "Het middelpunt \u2014 krokantvellige eend aan tafel gesneden, gewikkeld in dunne pannenkoekjes met huissaus.",
+        "Cantonese Duck": "Gelakt en langzaam geroosterd op Cantonese wijze \u2014 rijk, glanzend en diep gearomatiseerd.",
+        "Roast Duck with Orange": "Sappige geroosterde eend in een bitterzoete sinaasappelsaus \u2014 een tijdloze combinatie.",
+        "Roast Duck with Pineapple": "Tropische zoetheid ontmoet de hartige diepte van langzaam geroosterde eend.",
+        "Roast Duck with Chinese Mushrooms": "Aardse shiitake en oesterzwammen naast malse, gelakte eend.",
+        "Roast Duck with Eight Delicacies": "Een weelderig gerecht \u2014 geroosterde eend met een mix van acht gekoesterde ingrediënten.",
+        "Roast Duck with Curry Sauce": "Rijke eend gecombineerd met een warme, gouden curry \u2014 gedurfd en aromatisch.",
+        "Chop Suey with Beef": "Gegrild rundvlees en taugé, snel gebakken om hun bite te behouden.",
+        "Beef with Hot Sauce": "Malse plakjes in een gedurfde, pikante saus die met elke hap opbouwt.",
+        "Beef with Chinese Mushrooms": "Bossige paddenstoelen en gegrild rundvlees in een diepe, hartige glaze.",
+        "Beef with Onions": "Gekarameliseerde uien en gegrild rundvlees \u2014 eenvoudig, bevredigend en rijk.",
+        "Beef with Curry Sauce": "Geurige currysaus omwikkelt malse, wokgebakken rundvleesplakjes.",
+        "Beef with Oyster Sauce": "Een Kantonees klassiek \u2014 zijdezachte oestersaus en perfect gegrild rundvlees.",
+        "Fried Pork with Sweet & Sour Sauce": "Knapperige varkensstukjes overgoten met een glanzende, zoetzure saus.",
+        "Pork with Mixed Vegetables": "Mals varkensvlees roergebakken met een tuin vol verse groenten.",
+        "Barbecued Pork with Honey": "Honiglak varkensvlees met geblakerde randen \u2014 rokerig, zoet en onweerstaanbaar.",
+        "Babi Pangang (Roasted Pork)": "Een geliefde klassieker \u2014 geroosterd varkensvlees in een rijke, gekruide saus.",
+        "Fried Rice with Chicken": "Geurige jasmijnrijst, wokgebakken met malse kip en aroma\u2019s.",
+        "Fried Rice with Pork": "Klassieke nasi goreng met hartig varkensvlees en een vleugje soja.",
+        "Fried Rice with Beef": "Gegrilde rundvleesreepjes door geurige, wokgeblakerde rijst gevouwen.",
+        "Fried Rice with Shrimps": "Grote scampi en jasmijnrijst, gekust door de vlam van de wok.",
+        "Fried Rice Special": "Het beste van de keuken \u2014 een royale mix van vlees, garnalen en groenten over rijst.",
+        "Fried Noodles with Chicken": "Veerkrachtige eiernoedels, geblakerd in de wok met malse kip.",
+        "Fried Noodles with Pork": "Rokerige, wokgebakken noedels met hartig varkensvlees en knapperige groenten.",
+        "Fried Noodles with Beef": "Geblakerde noedels en gegrild rundvlees \u2014 stevig en diep bevredigend.",
+        "Fried Noodles with Shrimps": "Scampi en noedels, gebakken in een hete wok tot perfect rokerig.",
+        "Fried Noodles Special": "Een hoogtepunt van de wok \u2014 gemengde eiwitten, verse groenten en veerkrachtige noedels.",
+        "Cantonese Vermicelli": "Glasnoedels bereid op Cantonese wijze \u2014 licht, geurig en genuanceerd.",
+        "Noodle Soup (Chicken, Pork, or Beef)": "Tarwenoedels in een dampende, hartige bouillon \u2014 kies uw eiwit.",
+        "Special Noodle Soup": "Een royale kom \u2014 rijke bouillon, veerkrachtige noedels en een genereuze mix van toppings.",
+        "Imperial Spare Ribs": "Langzaam gegaarde ribben afgewerkt in een keizerlijk glazuur \u2014 mals, kleverig en vorstelijk.",
+        "Ti-Pan Beef": "Gegrild rundvlees geserveerd sissend op een gietijzeren plaat \u2014 dramatisch en heerlijk.",
+        "Ti-Pan Chicken": "Kip sissend op de hete plaat met wokgeblakerde groenten.",
+        "Ti-Pan Shrimps": "Grote scampi die aan tafel sissend en rokend aankomen op een hete plaat.",
+        "Ti-Pan Duck": "Gelakte eend, gegrild en sissend geserveerd \u2014 een feest voor alle zintuigen.",
+        "Frog's Legs with Spices": "Delicate kikkerbiletjes geparfumeerd met een geurig mengsel van specerijen.",
+        "Grilled Spare Ribs with Garlic": "Gegrilde ribben met een gedurfde, compromisloze knoflookafwerking.",
+        "Chinese Family Dish (Slightly Spicy)": "Een deelschotel voor de hele tafel \u2014 gemengd vlees in een verwarmende, licht gekruide saus.",
+        "Eight Delicacies (Slightly Spicy)": "Een assortiment van vlees met acht gekoesterde ingrediënten \u2014 licht gekruid, diep gelaagd."
+      }
+    };
+
+    /* ========================================
+       Dishes Carousel
+       ======================================== */
+    const DISHES = [
+      {
+        img: 'https://images.pexels.com/photos/5848595/pexels-photo-5848595.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+        price: '16.90',
+        en: { name: 'Peking Duck', sub: 'with pancakes & house sauce' },
+        fr: { name: 'Canard laqué de Pékin', sub: 'servi avec crêpes et sauce' },
+        nl: { name: 'Gebraden Peking Eend', sub: 'opgediend met flensjes en saus' }
+      },
+      {
+        img: 'https://images.pexels.com/photos/31261436/pexels-photo-31261436/free-photo-of-delicious-steamed-shrimp-dumplings-in-bamboo-basket.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+        price: '6.20',
+        en: { name: 'Ha Gao', sub: 'steamed shrimp dumplings' },
+        fr: { name: 'Raviolis aux crevettes', sub: 'à la vapeur' },
+        nl: { name: 'Gestoomde garnalenraviolis', sub: 'Ha Gao' }
+      },
+      {
+        img: 'https://images.pexels.com/photos/1395319/pexels-photo-1395319.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+        price: '5.50',
+        en: { name: 'Wonton Soup', sub: 'pork-filled dumplings in broth' },
+        fr: { name: 'Potage Wan-Tan', sub: 'raviolis farcis à la viande' },
+        nl: { name: 'Wan-Tan soep', sub: 'raviolis met varkensvlees' }
+      },
+      {
+        img: 'https://images.pexels.com/photos/30708204/pexels-photo-30708204/free-photo-of-delicious-kung-pao-chicken-on-white-plate.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+        price: '12.50',
+        en: { name: 'Kung Pao Chicken', sub: 'chilli, peanuts, high heat' },
+        fr: { name: 'Poulet Kong-Po', sub: 'sauce piquante, piments' },
+        nl: { name: 'Kippenreepjes Kong-Po', sub: 'pikante saus' }
+      },
+      {
+        img: 'https://images.pexels.com/photos/12356601/pexels-photo-12356601.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+        price: '7.00',
+        en: { name: 'Vietnamese Spring Rolls', sub: 'crisp, fragrant, spiced' },
+        fr: { name: 'Croquettes vietnamiennes', sub: 'nems croustillants' },
+        nl: { name: 'Vietnamese loempia\'s', sub: 'nems' }
+      },
+      {
+        img: 'https://images.pexels.com/photos/29160636/pexels-photo-29160636/free-photo-of-hand-holding-spicy-shrimp-fried-rice-in-wok.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+        price: '17.90',
+        en: { name: 'Mixed Seafood', sub: 'Cantonese style marmite' },
+        fr: { name: 'Marmite maison', sub: 'fruits de mer à la cantonaise' },
+        nl: { name: 'Zeevruchten huisschotel', sub: 'Cantonese stijl' }
+      },
+      {
+        img: 'https://images.pexels.com/photos/8250723/pexels-photo-8250723.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+        price: '13.50',
+        en: { name: 'Imperial Spare Ribs', sub: 'slow-cooked, imperial glaze' },
+        fr: { name: 'Spareribs à l\'impériale', sub: 'glaçage impérial' },
+        nl: { name: 'Ribbetjes op keizerlijke wijze', sub: 'keizerlijk glazuur' }
+      },
+      {
+        img: 'https://images.pexels.com/photos/5409019/pexels-photo-5409019.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+        price: '14.20',
+        en: { name: 'Fried Rice Special', sub: 'mixed meats, wok-charred' },
+        fr: { name: 'Riz sauté spécial', sub: 'assortiment de viandes' },
+        nl: { name: 'Nasigoreng speciaal', sub: 'gemengd vlees, wokbereid' }
+      },
+      {
+        img: 'https://images.pexels.com/photos/7138913/pexels-photo-7138913.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+        price: '14.20',
+        en: { name: 'Cantonese Vermicelli', sub: 'light, fragrant, nuanced' },
+        fr: { name: 'Vermicelles cantonais', sub: 'façon de Canton' },
+        nl: { name: 'Vermicelli Cantonese wijze', sub: 'licht en geurig' }
+      },
+      {
+        img: 'https://images.pexels.com/photos/34429557/pexels-photo-34429557/free-photo-of-sizzling-beef-stir-fry-with-vegetables-in-pan.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+        price: '14.50',
+        en: { name: 'Beef Stir Fry', sub: 'wok-seared, high heat' },
+        fr: { name: 'Bœuf sauté', sub: 'émincés de bœuf au wok' },
+        nl: { name: 'Roergebakken rundvlees', sub: 'wokbereid op hoog vuur' }
+      },
+      {
+        img: 'https://images.pexels.com/photos/7363680/pexels-photo-7363680.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+        price: '6.20',
+        en: { name: 'Dim Sum Assortment', sub: '4 varieties, steamed' },
+        fr: { name: 'Assortiment Dim-Sum', sub: '4 variétés à la vapeur' },
+        nl: { name: 'Gevarieerde Dim-Sum', sub: '4 soorten, gestoomd' }
+      },
+      {
+        img: 'https://images.pexels.com/photos/6645928/pexels-photo-6645928.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+        price: '16.90',
+        en: { name: 'Roast Duck with Orange', sub: 'bittersweet, timeless' },
+        fr: { name: 'Canard rôti à l\'orange', sub: 'sauce bigarade' },
+        nl: { name: 'Gebraden eend met sinaasappel', sub: 'bitterzoete saus' }
+      }
+    ];
+
+    const TRANSLATIONS = {
+      en: {
+        nav: { about: 'About', menu: 'Menu', contact: 'Contact', booking: 'Book' },
+        booking: {
+          title: 'Reserve a Table',
+          guests: 'Guests',
+          date: 'Date',
+          time: 'Time',
+          continue: 'Continue',
+          firstname: 'First name',
+          lastname: 'Last name',
+          email: 'Email',
+          phone: 'Phone',
+          notes: 'Special requests',
+          back: 'Back',
+          confirm: 'Confirm Reservation',
+          confirmed: 'Reservation Confirmed',
+          new: 'Make another reservation',
+          closed: 'We are closed on Mondays and Tuesday midday.',
+          summaryTpl: 'Thank you, {name}. We look forward to welcoming {guests} on {date} at {time}. A confirmation will be sent to {email}.'
+        },
+        hero: {
+          headline: 'Home made<br>Chinese cooking.',
+          subheadline: 'A neighbourhood table in Kraainem \u2014 where tradition meets the quiet pleasure of a well-made dish.',
+          cta: 'View the Menu',
+          scroll: 'Scroll'
+        },
+        about: {
+          title: 'Our Table',
+          body: 'Lotus has been a fixture of Kraainem\u2019s dining landscape for decades. What began as a modest Chinese kitchen has matured into something rarer \u2014 a restaurant where the recipes stay close to their origins and the welcome feels unhurried.\n\nThe kitchen works with a vocabulary rooted in Cantonese and Northern Chinese traditions: hand-folded dumplings, roast duck carved to order, and wok dishes built on a foundation of fresh aromatics and honest heat. More recently, a full range of vegan and vegetarian dishes has joined the menu \u2014 not as an afterthought, but as a genuine extension of the kitchen\u2019s craft.\n\nWe close on Mondays and Tuesday midday. A kitchen that rests cooks better when it returns.'
+        },
+        dishes: { title: 'Featured Dishes' },
+        menu: { title: 'Menu' },
+        contact: {
+          title: 'Find Us',
+          address: 'Address',
+          hours: 'Opening Hours',
+          mapLink: 'Open in Google Maps',
+          summary: 'Tuesday evening through Sunday',
+          hourRows: [
+            { days: 'Tuesday', times: '18:00 \u2013 21:30' },
+            { days: 'Wednesday \u2013 Sunday', times: '12:00 \u2013 14:00 & 18:00 \u2013 21:30' },
+            { days: 'Monday & Tuesday noon', times: 'Closed' }
+          ],
+          note: 'Open on public holidays'
+        },
+        footer: 'Lotus \u2014 Kraainem\u2019s Chinese table since day one.',
+        menuCategories: [
+          { name: 'Soups', description: 'Clear broths, silken textures, and the kind of warmth that settles you into the meal ahead.' },
+          { name: 'Starters', description: 'The meal begins here \u2014 crisp edges, tender centres, and flavours that set the tone for what follows.' },
+          { name: 'Vegan', description: 'Every dish in this section is fully vegan \u2014 crafted with the same care and attention as the rest of the menu.' },
+          { name: 'Seafood', description: 'From the wok to the table \u2014 scampi, squid, and the ocean\u2019s best, cooked with precision and respect.' },
+          { name: 'Poultry', description: 'Tender chicken, wok-seared and sauced \u2014 from the familiar comfort of sweet and sour to the bold heat of Kung Pao.' },
+          { name: 'Duck', description: 'Roasted, lacquered, and served with ceremony. Our duck is prepared in the Cantonese and Peking traditions.' },
+          { name: 'Beef', description: 'Thinly sliced and wok-seared at the highest heat. Every cut is treated with precision.' },
+          { name: 'Pork', description: 'From crisp sweet-and-sour to honey-lacquered barbecue \u2014 pork prepared with care and character.' },
+          { name: 'Rice & Noodles', description: 'The foundation of every Chinese table. Wok-fried over high flame, served generous and steaming.' },
+          { name: 'House Specialties', description: 'The dishes we are most proud of. Sizzling Ti-Pan platters, imperial ribs, and the kitchen\u2019s greatest hits.' }
+        ]
+      },
+      fr: {
+        nav: { about: '\u00c0 Propos', menu: 'Carte', contact: 'Contact', booking: 'R\u00e9server' },
+        booking: {
+          title: 'R\u00e9server une Table',
+          guests: 'Couverts',
+          date: 'Date',
+          time: 'Heure',
+          continue: 'Continuer',
+          firstname: 'Pr\u00e9nom',
+          lastname: 'Nom',
+          email: 'E-mail',
+          phone: 'T\u00e9l\u00e9phone',
+          notes: 'Demandes sp\u00e9ciales',
+          back: 'Retour',
+          confirm: 'Confirmer la R\u00e9servation',
+          confirmed: 'R\u00e9servation Confirm\u00e9e',
+          new: 'Faire une autre r\u00e9servation',
+          closed: 'Nous sommes ferm\u00e9s le lundi et le mardi midi.',
+          summaryTpl: 'Merci, {name}. Nous avons h\u00e2te de vous accueillir \u00e0 {guests} le {date} \u00e0 {time}. Une confirmation sera envoy\u00e9e \u00e0 {email}.'
+        },
+        hero: {
+          headline: 'Cuisine chinoise<br>faite maison.',
+          subheadline: 'Une table de quartier \u00e0 Kraainem \u2014 o\u00f9 la tradition rencontre le plaisir tranquille d\u2019un plat bien pr\u00e9par\u00e9.',
+          cta: 'Voir la Carte',
+          scroll: 'D\u00e9filer'
+        },
+        about: {
+          title: 'Notre Table',
+          body: 'Lotus est une adresse incontournable \u00e0 Kraainem depuis des d\u00e9cennies. Ce qui a commenc\u00e9 comme une modeste cuisine chinoise s\u2019est transform\u00e9 en quelque chose de plus rare \u2014 un restaurant o\u00f9 les recettes restent fid\u00e8les \u00e0 leurs origines et l\u2019accueil reste chaleureux.\n\nLa cuisine travaille avec un vocabulaire ancr\u00e9 dans les traditions cantonaises et du nord de la Chine\u00a0: raviolis pli\u00e9s \u00e0 la main, canard laqu\u00e9 d\u00e9coup\u00e9 \u00e0 la commande, et plats au wok construits sur des aromates frais et une chaleur honn\u00eate. Plus r\u00e9cemment, une gamme compl\u00e8te de plats v\u00e9ganes et v\u00e9g\u00e9tariens a rejoint la carte \u2014 non comme une concession, mais comme une v\u00e9ritable extension du savoir-faire.\n\nNous fermons le lundi et le mardi midi. Une cuisine qui se repose cuisine mieux \u00e0 son retour.'
+        },
+        dishes: { title: 'Plats \u00e0 la Une' },
+        menu: { title: 'Carte' },
+        contact: {
+          title: 'Nous Trouver',
+          address: 'Adresse',
+          hours: 'Heures d\u2019ouverture',
+          mapLink: 'Ouvrir dans Google Maps',
+          summary: 'Du mardi soir au dimanche',
+          hourRows: [
+            { days: 'Mardi', times: '18:00 \u2013 21:30' },
+            { days: 'Mercredi \u2013 Dimanche', times: '12:00 \u2013 14:00 & 18:00 \u2013 21:30' },
+            { days: 'Lundi & Mardi midi', times: 'Ferm\u00e9' }
+          ],
+          note: 'Ouvert les jours f\u00e9ri\u00e9s'
+        },
+        footer: 'Lotus \u2014 la table chinoise de Kraainem, depuis toujours.',
+        menuCategories: [
+          { name: 'Soupes', description: 'Bouillons clairs, textures soyeuses, et la chaleur qui vous installe doucement dans le repas.' },
+          { name: 'Entr\u00e9es', description: 'Le repas commence ici \u2014 bords croustillants, c\u0153urs tendres, et saveurs qui donnent le ton.' },
+          { name: 'V\u00e9gane', description: 'Chaque plat de cette section est enti\u00e8rement v\u00e9gane \u2014 pr\u00e9par\u00e9 avec le m\u00eame soin que le reste de la carte.' },
+          { name: 'Fruits de Mer', description: 'Du wok \u00e0 la table \u2014 scampi, calmars et les meilleurs produits de la mer, cuisin\u00e9s avec pr\u00e9cision.' },
+          { name: 'Volaille', description: 'Poulet tendre, saisi au wok et en sauce \u2014 du r\u00e9confort sucr\u00e9-sal\u00e9 \u00e0 la chaleur audacieuse du Kung Pao.' },
+          { name: 'Canard', description: 'R\u00f4ti, laqu\u00e9 et servi avec c\u00e9r\u00e9monie. Notre canard est pr\u00e9par\u00e9 dans les traditions cantonaise et p\u00e9kinoise.' },
+          { name: 'B\u0153uf', description: 'Finement tranch\u00e9 et saisi au wok \u00e0 feu vif. Chaque morceau est trait\u00e9 avec pr\u00e9cision.' },
+          { name: 'Porc', description: 'Du croustillant aigre-doux au barbecue laqu\u00e9 au miel \u2014 le porc pr\u00e9par\u00e9 avec soin et caract\u00e8re.' },
+          { name: 'Riz & Nouilles', description: 'Le fondement de toute table chinoise. Saut\u00e9 au wok sur flamme vive, servi g\u00e9n\u00e9reux et fumant.' },
+          { name: 'Sp\u00e9cialit\u00e9s Maison', description: 'Les plats dont nous sommes le plus fiers. Plateaux Ti-Pan gr\u00e9sillants, c\u00f4tes imp\u00e9riales, et les grands classiques.' }
+        ]
+      },
+      nl: {
+        nav: { about: 'Over Ons', menu: 'Menu', contact: 'Contact', booking: 'Reserveren' },
+        booking: {
+          title: 'Een Tafel Reserveren',
+          guests: 'Gasten',
+          date: 'Datum',
+          time: 'Tijdstip',
+          continue: 'Verdergaan',
+          firstname: 'Voornaam',
+          lastname: 'Achternaam',
+          email: 'E-mail',
+          phone: 'Telefoon',
+          notes: 'Speciale verzoeken',
+          back: 'Terug',
+          confirm: 'Reservering Bevestigen',
+          confirmed: 'Reservering Bevestigd',
+          new: 'Nog een reservering maken',
+          closed: 'We zijn gesloten op maandag en dinsdagmiddag.',
+          summaryTpl: 'Dank u, {name}. We kijken ernaar uit u met {guests} te verwelkomen op {date} om {time}. Een bevestiging wordt verzonden naar {email}.'
+        },
+        hero: {
+          headline: 'Huisgemaakte<br>Chinese keuken.',
+          subheadline: 'Een buurtrestaurant in Kraainem \u2014 waar traditie de stille vreugde van een goed gerecht ontmoet.',
+          cta: 'Bekijk het Menu',
+          scroll: 'Scroll'
+        },
+        about: {
+          title: 'Onze Tafel',
+          body: 'Lotus is al tientallen jaren een vaste waarde in het restaurantlandschap van Kraainem. Wat begon als een bescheiden Chinese keuken is uitgegroeid tot iets zeldzamers \u2014 een restaurant waar recepten dicht bij hun oorsprong blijven en het onthaal ongedwongen aanvoelt.\n\nDe keuken werkt met een vocabulaire geworteld in Kantonese en Noord-Chinese tradities: met de hand gevouwen dumplings, geroosterde eend op bestelling gesneden, en wokgerechten op basis van verse aroma\u2019s en eerlijke hitte. Onlangs heeft een volledig gamma veganistische en vegetarische gerechten de kaart vervoegd \u2014 niet als bijgedachte, maar als echte uitbreiding van het vakmanschap.\n\nWe zijn gesloten op maandag en dinsdagmiddag. Een keuken die rust, kookt beter wanneer ze terugkeert.'
+        },
+        dishes: { title: 'Uitgelichte Gerechten' },
+        menu: { title: 'Menu' },
+        contact: {
+          title: 'Vind Ons',
+          address: 'Adres',
+          hours: 'Openingstijden',
+          mapLink: 'Openen in Google Maps',
+          summary: 'Dinsdagavond tot en met zondag',
+          hourRows: [
+            { days: 'Dinsdag', times: '18:00 \u2013 21:30' },
+            { days: 'Woensdag \u2013 Zondag', times: '12:00 \u2013 14:00 & 18:00 \u2013 21:30' },
+            { days: 'Maandag & Dinsdagmiddag', times: 'Gesloten' }
+          ],
+          note: 'Open op feestdagen'
+        },
+        footer: 'Lotus \u2014 de Chinese tafel van Kraainem, al van meet af aan.',
+        menuCategories: [
+          { name: 'Soepen', description: 'Heldere bouillons, zijdezachte texturen en de warmte die u instelt voor het komende maal.' },
+          { name: 'Voorgerechten', description: 'Het maal begint hier \u2014 knapperige randjes, zachte binnenkanten en smaken die de toon zetten.' },
+          { name: 'Veganistisch', description: 'Elk gerecht in deze sectie is volledig veganistisch \u2014 bereid met dezelfde zorg als de rest van de kaart.' },
+          { name: 'Zeevruchten', description: 'Van de wok naar de tafel \u2014 scampi, inktvis en het beste van de zee, bereid met precisie.' },
+          { name: 'Gevogelte', description: 'Mals kippenvlees, geroerd in de wok en gesausd \u2014 van zoetzuur comfort tot de gedurfde hitte van Kung Pao.' },
+          { name: 'Eend', description: 'Geroosterd, gelakt en met ceremonie geserveerd. Onze eend wordt bereid in de Kantonese en Pekingse traditie.' },
+          { name: 'Rundvlees', description: 'Dun gesneden en op het hoogste vuur geroerd. Elk stuk wordt met precisie behandeld.' },
+          { name: 'Varkensvlees', description: 'Van knapperig zoetzuur tot honiglak barbecue \u2014 varkensvlees bereid met zorg en karakter.' },
+          { name: 'Rijst & Noedels', description: 'De basis van elke Chinese tafel. Gebakken in de wok op hoge vlam, royaal en dampend geserveerd.' },
+          { name: 'Huisspecialiteiten', description: 'De gerechten waar we het meest trots op zijn. Sissende Ti-Pan schotels, keizerlijke ribben en de grote klassieker.' }
+        ]
+      }
+    };
+
+    function getT(lang, path) {
+      return path.split('.').reduce((o, k) => (o && o[k] !== undefined ? o[k] : undefined), TRANSLATIONS[lang]);
+    }
+
+    let currentLang = 'en';
+    let carouselIndex = 0;
+    let cardsPerView = 3;
+
+    function getCardsPerView() {
+      if (window.innerWidth <= 640) return 1;
+      if (window.innerWidth <= 1024) return 2;
+      return 3;
+    }
+
+    function renderCarousel() {
+      const track = document.getElementById('carousel-track');
+      const dotsEl = document.getElementById('carousel-dots');
+      if (!track || !dotsEl) return;
+
+      track.innerHTML = DISHES.map((d, i) => `
+        <div class="dish-card">
+          <img class="dish-card__img" src="${d.img}" alt="${d[currentLang].name}" loading="lazy">
+          <div class="dish-card__overlay">
+            <span class="dish-card__name" data-dish-name="${i}">${d[currentLang].name}</span>
+            <span class="dish-card__sub" data-dish-sub="${i}">${d[currentLang].sub}</span>
+          </div>
+          <span class="dish-card__price">&euro;${d.price}</span>
+        </div>
+      `).join('');
+
+      cardsPerView = getCardsPerView();
+      const totalSlides = Math.ceil(DISHES.length / cardsPerView);
+      dotsEl.innerHTML = Array.from({ length: totalSlides }, (_, i) =>
+        `<button class="carousel-dot${i === 0 ? ' active' : ''}" data-slide="${i}" aria-label="Go to slide ${i + 1}"></button>`
+      ).join('');
+
+      dotsEl.querySelectorAll('.carousel-dot').forEach(dot => {
+        dot.addEventListener('click', () => goToSlide(+dot.dataset.slide));
+      });
+
+      updateCarouselPosition();
+    }
+
+    function updateCarouselPosition() {
+      const track = document.getElementById('carousel-track');
+      if (!track) return;
+      cardsPerView = getCardsPerView();
+      const cardWidth = track.parentElement.offsetWidth / cardsPerView;
+      const gap = 20;
+      const offset = carouselIndex * (cardWidth + gap - gap / cardsPerView);
+      track.style.transform = `translateX(-${carouselIndex * (100 / cardsPerView)}%)`;
+      // Simpler: use percentage-based offset
+      track.style.transform = `translateX(calc(-${carouselIndex * (100 / DISHES.length) * cardsPerView}%))`;
+
+      document.querySelectorAll('.carousel-dot').forEach((dot, i) => {
+        dot.classList.toggle('active', i === carouselIndex);
+      });
+    }
+
+    function goToSlide(index) {
+      cardsPerView = getCardsPerView();
+      const maxIndex = Math.ceil(DISHES.length / cardsPerView) - 1;
+      carouselIndex = Math.max(0, Math.min(index, maxIndex));
+      updateCarouselPosition();
+    }
+
+    function updateLang(lang) {
+      currentLang = lang;
+      document.documentElement.lang = lang;
+
+      // Active button state
+      document.querySelectorAll('.nav__lang .lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+      });
+
+      // Static text nodes
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const val = getT(lang, el.dataset.i18n);
+        if (val !== undefined) el.textContent = val;
+      });
+
+      // Static HTML nodes (e.g. headline with <br>)
+      document.querySelectorAll('[data-i18n-html]').forEach(el => {
+        const val = getT(lang, el.dataset.i18nHtml);
+        if (val !== undefined) el.innerHTML = val;
+      });
+
+      // Re-render dynamic sections
+      renderAbout(lang);
+      renderMenu(lang);
+      renderContact(lang);
+      renderFooter(lang);
+
+      // Update carousel dish labels
+      DISHES.forEach((d, i) => {
+        const nameEl = document.querySelector('[data-dish-name="' + i + '"]');
+        const subEl = document.querySelector('[data-dish-sub="' + i + '"]');
+        if (nameEl) nameEl.textContent = d[lang].name;
+        if (subEl) subEl.textContent = d[lang].sub;
+      });
+    }
+
+    function initCarousel() {
+      renderCarousel();
+
+      document.getElementById('carousel-prev').addEventListener('click', () => {
+        cardsPerView = getCardsPerView();
+        const maxIndex = Math.ceil(DISHES.length / cardsPerView) - 1;
+        goToSlide(carouselIndex <= 0 ? maxIndex : carouselIndex - 1);
+      });
+
+      document.getElementById('carousel-next').addEventListener('click', () => {
+        cardsPerView = getCardsPerView();
+        const maxIndex = Math.ceil(DISHES.length / cardsPerView) - 1;
+        goToSlide(carouselIndex >= maxIndex ? 0 : carouselIndex + 1);
+      });
+
+      document.querySelector('.nav__lang').addEventListener('click', e => {
+        const btn = e.target.closest('.lang-btn');
+        if (btn) updateLang(btn.dataset.lang);
+      });
+
+      // Touch/swipe support
+      let touchStartX = 0;
+      const wrapper = document.querySelector('.carousel-track-wrapper');
+      wrapper.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+      wrapper.addEventListener('touchend', e => {
+        const diff = touchStartX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 50) {
+          cardsPerView = getCardsPerView();
+          const maxIndex = Math.ceil(DISHES.length / cardsPerView) - 1;
+          if (diff > 0) goToSlide(carouselIndex >= maxIndex ? 0 : carouselIndex + 1);
+          else goToSlide(carouselIndex <= 0 ? maxIndex : carouselIndex - 1);
+        }
+      }, { passive: true });
+
+      window.addEventListener('resize', () => {
+        cardsPerView = getCardsPerView();
+        carouselIndex = 0;
+        const dotsEl = document.getElementById('carousel-dots');
+        const totalSlides = Math.ceil(DISHES.length / cardsPerView);
+        dotsEl.innerHTML = Array.from({ length: totalSlides }, (_, i) =>
+          `<button class="carousel-dot${i === 0 ? ' active' : ''}" data-slide="${i}" aria-label="Go to slide ${i + 1}"></button>`
+        ).join('');
+        dotsEl.querySelectorAll('.carousel-dot').forEach(dot => {
+          dot.addEventListener('click', () => goToSlide(+dot.dataset.slide));
+        });
+        updateCarouselPosition();
+      }, { passive: true });
+    }
+
+    /* ========================================
+       Booking
+       ======================================== */
+    function initBooking() {
+      let guestCount = 2;
+      let selectedTime = null;
+
+      const guestCountEl = document.getElementById('guests-count');
+      const dateInput = document.getElementById('booking-date');
+      const timeSlotsEl = document.getElementById('time-slots');
+      const closedEl = document.getElementById('booking-closed');
+
+      // Set min date to today
+      const today = new Date();
+      const todayStr = today.toISOString().split('T')[0];
+      dateInput.min = todayStr;
+      dateInput.value = todayStr;
+
+      // Guest counter
+      document.getElementById('guests-minus').addEventListener('click', () => {
+        if (guestCount > 1) { guestCount--; guestCountEl.textContent = guestCount; }
+      });
+      document.getElementById('guests-plus').addEventListener('click', () => {
+        if (guestCount < 20) { guestCount++; guestCountEl.textContent = guestCount; }
+      });
+
+      function getTimeSlotsForDate(dateStr) {
+        if (!dateStr) return [];
+        const d = new Date(dateStr + 'T12:00:00');
+        const dow = d.getDay(); // 0=Sun,1=Mon,2=Tue,3=Wed,4=Thu,5=Fri,6=Sat
+        if (dow === 1) return null; // Monday — closed
+        const lunch = ['12:00', '12:30', '13:00', '13:30'];
+        const dinner = ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30'];
+        if (dow === 2) return dinner; // Tuesday — dinner only
+        return [...lunch, ...dinner]; // Wed–Sun
+      }
+
+      function renderTimeSlots(dateStr) {
+        selectedTime = null;
+        timeSlotsEl.innerHTML = '';
+        const slots = getTimeSlotsForDate(dateStr);
+        if (slots === null) {
+          closedEl.style.display = 'block';
+          timeSlotsEl.style.display = 'none';
+        } else {
+          closedEl.style.display = 'none';
+          timeSlotsEl.style.display = 'flex';
+          slots.forEach(t => {
+            const btn = document.createElement('button');
+            btn.className = 'time-slot';
+            btn.textContent = t;
+            btn.type = 'button';
+            btn.addEventListener('click', () => {
+              timeSlotsEl.querySelectorAll('.time-slot').forEach(b => b.classList.remove('selected'));
+              btn.classList.add('selected');
+              selectedTime = t;
+            });
+            timeSlotsEl.appendChild(btn);
+          });
+        }
+      }
+
+      renderTimeSlots(todayStr);
+      dateInput.addEventListener('change', () => renderTimeSlots(dateInput.value));
+
+      // Step navigation
+      function showStep(n) {
+        document.querySelectorAll('.booking-step').forEach(s => s.classList.remove('active'));
+        document.getElementById('booking-step-' + n).classList.add('active');
+      }
+
+      document.getElementById('booking-next-1').addEventListener('click', () => {
+        if (!dateInput.value) { dateInput.focus(); return; }
+        const slots = getTimeSlotsForDate(dateInput.value);
+        if (slots === null) return; // closed day
+        if (!selectedTime) {
+          timeSlotsEl.style.outline = '1px solid var(--color-accent)';
+          setTimeout(() => timeSlotsEl.style.outline = '', 1200);
+          return;
+        }
+        showStep(2);
+      });
+
+      document.getElementById('booking-back-2').addEventListener('click', () => showStep(1));
+
+      document.getElementById('booking-submit').addEventListener('click', () => {
+        const first = document.getElementById('booking-firstname').value.trim();
+        const last = document.getElementById('booking-lastname').value.trim();
+        const email = document.getElementById('booking-email').value.trim();
+        const phone = document.getElementById('booking-phone').value.trim();
+        if (!first || !last || !email || !phone) {
+          [first ? null : 'booking-firstname', last ? null : 'booking-lastname',
+           email ? null : 'booking-email', phone ? null : 'booking-phone']
+            .filter(Boolean).forEach(id => {
+              const el = document.getElementById(id);
+              el.style.borderColor = 'var(--color-accent)';
+              el.addEventListener('input', () => el.style.borderColor = '', { once: true });
+            });
+          return;
+        }
+
+        // Format date nicely
+        const d = new Date(dateInput.value + 'T12:00:00');
+        const dateFormatted = d.toLocaleDateString(currentLang === 'en' ? 'en-GB' : currentLang === 'fr' ? 'fr-BE' : 'nl-BE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        const tpl = getT(currentLang, 'booking.summaryTpl') || '';
+        const summary = tpl
+          .replace('{name}', first)
+          .replace('{guests}', guestCount)
+          .replace('{date}', dateFormatted)
+          .replace('{time}', selectedTime)
+          .replace('{email}', email);
+
+        document.getElementById('booking-summary').textContent = summary;
+        showStep(3);
+      });
+
+      document.getElementById('booking-new').addEventListener('click', () => {
+        document.getElementById('booking-firstname').value = '';
+        document.getElementById('booking-lastname').value = '';
+        document.getElementById('booking-email').value = '';
+        document.getElementById('booking-phone').value = '';
+        document.getElementById('booking-notes').value = '';
+        guestCount = 2;
+        guestCountEl.textContent = '2';
+        dateInput.value = todayStr;
+        renderTimeSlots(todayStr);
+        showStep(1);
+      });
+    }
+
+    /* ========================================
+       Init
+       ======================================== */
+    document.addEventListener('DOMContentLoaded', function() {
+      renderAbout();
+      renderMenu();
+      renderContact();
+      renderFooter();
+      initThemeToggle();
+      initNav();
+      initSmoothScroll();
+      initAnimations();
+      initCarousel();
+      initBooking();
+    });
+  </script>
+</body>
+</html>
