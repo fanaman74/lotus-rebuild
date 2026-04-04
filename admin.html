@@ -269,6 +269,10 @@
         <input type="text" id="f-name-en" placeholder="e.g. Wonton Soup">
       </div>
       <div class="form-group">
+        <label>Name (FR)</label>
+        <input type="text" id="f-name-fr" placeholder="e.g. Soupe Wan-Tan">
+      </div>
+      <div class="form-group full">
         <label>Dutch name / subtitle</label>
         <input type="text" id="f-subtitle" placeholder="e.g. Wan-Tan soep">
       </div>
@@ -537,6 +541,7 @@
       const item = items.find(i => i.id === id);
       sel.value = item.category_slug;
       document.getElementById('f-name-en').value = item.name_en || '';
+      document.getElementById('f-name-fr').value = item.name_fr || '';
       document.getElementById('f-subtitle').value = item.subtitle || '';
       document.getElementById('f-price').value = item.price || '';
       document.getElementById('f-sort').value = item.sort_order || '';
@@ -545,6 +550,7 @@
       document.getElementById('f-desc-nl').value = item.description_nl || '';
     } else {
       document.getElementById('f-name-en').value = '';
+      document.getElementById('f-name-fr').value = '';
       document.getElementById('f-subtitle').value = '';
       document.getElementById('f-price').value = '';
       document.getElementById('f-desc-en').value = '';
@@ -565,6 +571,7 @@
     const payload = {
       category_slug: document.getElementById('f-category').value,
       name_en: document.getElementById('f-name-en').value.trim(),
+      name_fr: document.getElementById('f-name-fr').value.trim() || null,
       subtitle: document.getElementById('f-subtitle').value.trim() || null,
       price: parseFloat(document.getElementById('f-price').value),
       sort_order: parseInt(document.getElementById('f-sort').value) || 1,
