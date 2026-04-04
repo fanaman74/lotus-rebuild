@@ -27,7 +27,10 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_APP_PASSWORD   // Gmail App Password (not your login password)
-  }
+  },
+  connectionTimeout: 5000,   // 5 s — bail if SMTP unreachable
+  greetingTimeout: 5000,
+  socketTimeout: 10000
 });
 
 // ── GET /api/menu ─────────────────────────────────────────────────────────────
