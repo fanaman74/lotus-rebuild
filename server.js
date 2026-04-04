@@ -139,9 +139,9 @@ app.post('/api/order', async (req, res) => {
     nl: `Beste ${name},`
   };
   const intros = {
-    en: `Thank you so much for placing your order with Lotus — we truly appreciate your trust and look forward to welcoming you.\n\nBelow is a summary of your order:`,
-    fr: `Nous vous remercions chaleureusement pour votre commande chez Lotus. Votre confiance nous touche et nous nous réjouissons de vous accueillir bientôt.\n\nVoici le récapitulatif de votre commande :`,
-    nl: `Hartelijk dank voor uw bestelling bij Lotus. Wij waarderen uw vertrouwen en kijken er naar uit u spoedig te verwelkomen.\n\nHieronder vindt u een overzicht van uw bestelling:`
+    en: `Thank you so much for your takeaway order at Lotus — we truly appreciate your trust and will have everything ready for you to collect.\n\nBelow is a summary of your order:`,
+    fr: `Nous vous remercions chaleureusement pour votre commande à emporter chez Lotus. Votre confiance nous touche et nous préparerons votre commande avec soin.\n\nVoici le récapitulatif de votre commande :`,
+    nl: `Hartelijk dank voor uw afhaalbestelling bij Lotus. Wij waarderen uw vertrouwen en zorgen ervoor dat alles klaarstaat wanneer u langskomt.\n\nHieronder vindt u een overzicht van uw bestelling:`
   };
   const tableHeader = {
     en: `  Item                          Qty    Unit     Total`,
@@ -161,14 +161,14 @@ app.post('/api/order', async (req, res) => {
     nl: `${separator}\n  ${'TOTAAL'.padEnd(38)} €${grandTotal}`
   };
   const callToActions = {
-    en: `To confirm your order, please call us at:\n\n  📞  02 721 98 33\n\nOur team will be happy to finalise the details with you, confirm timing, and answer any questions you may have.`,
-    fr: `Pour confirmer votre commande, veuillez nous appeler au :\n\n  📞  02 721 98 33\n\nNotre équipe se fera un plaisir de finaliser les détails avec vous, confirmer l'heure et répondre à toutes vos questions.`,
-    nl: `Om uw bestelling te bevestigen, gelieve ons te bellen op:\n\n  📞  02 721 98 33\n\nOns team helpt u graag verder met de details, tijdstip en eventuele vragen.`
+    en: `To confirm your takeaway order and arrange collection, please call us at:\n\n  📞  02 721 98 33\n\nOur team will be happy to confirm your collection time, let you know when your order will be ready, and answer any questions you may have.`,
+    fr: `Pour confirmer votre commande à emporter et convenir d'un horaire de récupération, veuillez nous appeler au :\n\n  📞  02 721 98 33\n\nNotre équipe se fera un plaisir de confirmer l'heure de retrait, vous indiquer quand votre commande sera prête et répondre à toutes vos questions.`,
+    nl: `Om uw afhaalbestelling te bevestigen en een ophaaltijd af te spreken, gelieve ons te bellen op:\n\n  📞  02 721 98 33\n\nOns team bevestigt graag uw ophaaltijdstip, laat u weten wanneer uw bestelling klaar is en beantwoordt al uw vragen.`
   };
   const closings = {
-    en: `We look forward to hearing from you.\n\nWarm regards,\nThe Lotus Team`,
-    fr: `Dans l'attente de votre appel, veuillez agréer nos cordiales salutations.\n\nL'équipe Lotus`,
-    nl: `We kijken uit naar uw telefoontje.\n\nMet vriendelijke groeten,\nHet Lotus-team`
+    en: `We look forward to your call and to preparing your meal.\n\nWarm regards,\nThe Lotus Team`,
+    fr: `Dans l'attente de votre appel et avec plaisir de préparer votre repas.\n\nL'équipe Lotus`,
+    nl: `We kijken uit naar uw telefoontje en bereiden uw maaltijd met plezier.\n\nMet vriendelijke groeten,\nHet Lotus-team`
   };
   const l = ['en', 'fr', 'nl'].includes(lang) ? lang : 'en';
 
@@ -177,7 +177,7 @@ app.post('/api/order', async (req, res) => {
     '',
     intros[l],
     '',
-    `  Order reference: ${ref}`,
+    `  ${{ en: 'Takeaway reference', fr: 'Référence de commande', nl: 'Afhaalreferentie' }[l]}: ${ref}`,
     '',
     tableHeader[l],
     tableRows,
@@ -193,9 +193,9 @@ app.post('/api/order', async (req, res) => {
   ].join('\n');
 
   const subjects = {
-    en: `Your order at Lotus — ${ref}`,
-    fr: `Votre commande chez Lotus — ${ref}`,
-    nl: `Uw bestelling bij Lotus — ${ref}`
+    en: `Your takeaway order at Lotus — ${ref}`,
+    fr: `Votre commande à emporter chez Lotus — ${ref}`,
+    nl: `Uw afhaalbestelling bij Lotus — ${ref}`
   };
 
   try {

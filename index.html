@@ -2723,7 +2723,7 @@
 
       toggleBtn.addEventListener('click', function() {
         const isOpen = form.classList.toggle('open');
-        toggleBtn.textContent = isOpen ? 'Cancel' : 'Send Order by Email';
+        toggleBtn.textContent = isOpen ? 'Cancel' : 'Order Takeaway by Email';
         confirmEl.classList.remove('show');
       });
 
@@ -2814,7 +2814,7 @@
         <span class="cart-total__amount" id="cart-total">€0.00</span>
       </div>
       <button class="cart-checkout-btn" onclick="cartCheckout()">Proceed to booking</button>
-      <button class="cart-order-btn" id="cart-order-toggle">Send Order by Email</button>
+      <button class="cart-order-btn" id="cart-order-toggle">Order Takeaway by Email</button>
 
       <!-- Email order form -->
       <div class="cart-order-form" id="cart-order-form">
@@ -2826,7 +2826,7 @@
       <!-- Confirmation -->
       <div class="cart-order-confirm" id="cart-order-confirm">
         <div class="cart-order-ref" id="cart-order-ref"></div>
-        <p>Your order has been sent. Please call us at <strong>02 721 98 33</strong> to confirm.</p>
+        <p>Your takeaway order has been sent. Please call us at <strong>02 721 98 33</strong> to confirm and arrange collection.</p>
       </div>
 
       <button class="cart-clear-btn" onclick="cartClear()">Clear order</button>
