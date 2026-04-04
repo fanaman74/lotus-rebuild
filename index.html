@@ -2654,15 +2654,11 @@
       initBooking();
       initCart();
 
-      // Fetch live menu from API — single source of truth
+      // Fetch live menu from API (active-only filtered); keep SITE_DATA on failure
       fetch('/api/menu')
-        .then(r => r.ok ? r.json() : r.json().then(e => Promise.reject(e)))
+        .then(r => r.ok ? r.json() : Promise.reject(r.status))
         .then(data => { menuData = data; renderMenu(currentLang); })
-        .catch(err => {
-          console.error('Menu API error:', err);
-          document.getElementById('menu-panels').innerHTML =
-            '<p style="color:var(--color-text-muted);padding:2rem 0;text-align:center;font-size:var(--text-sm)">Menu unavailable. Please call us at 02 721 98 33.</p>';
-        });
+        .catch(err => console.warn('Menu API unavailable (' + err + '), showing cached menu'));
     });
   </script>
   <!-- Cart overlay -->
