@@ -1313,6 +1313,36 @@
       margin-bottom: 1rem;
     }
     .booking-summary { color: var(--color-text-secondary); margin-bottom: 2rem; line-height: 1.7; }
+
+    /* Submit spinner */
+    .booking-btn--loading {
+      position: relative;
+      color: transparent !important;
+      pointer-events: none;
+    }
+    .booking-btn--loading::after {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      border: 2px solid rgba(0,0,0,0.25);
+      border-top-color: #000;
+      border-radius: 50%;
+      animation: btn-spin 0.7s linear infinite;
+    }
+    @keyframes btn-spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+    .booking-loading-msg {
+      display: none;
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      margin-top: 0.75rem;
+      animation: fadeIn 0.4s ease;
+    }
+    .booking-loading-msg.visible { display: block; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
     @media (max-width: 640px) {
       .booking-fields { grid-template-columns: 1fr; }
       .booking-row { grid-template-columns: 1fr; }
@@ -1522,6 +1552,7 @@
             <button class="booking-btn booking-btn--ghost" id="booking-back-2" data-i18n="booking.back">Back</button>
             <button class="booking-btn" id="booking-submit" data-i18n="booking.confirm">Confirm Reservation</button>
           </div>
+          <p class="booking-loading-msg" id="booking-loading-msg" data-i18n="booking.loading">Confirming your reservation…</p>
         </div>
 
         <!-- Step 3: Confirmation -->
@@ -2071,6 +2102,7 @@
           notes: 'Special requests',
           back: 'Back',
           confirm: 'Confirm Reservation',
+          loading: 'Confirming your reservation\u2026',
           confirmed: 'Reservation Confirmed',
           new: 'Make another reservation',
           closed: 'We are closed on Mondays and Tuesday midday.',
@@ -2130,6 +2162,7 @@
           notes: 'Demandes sp\u00e9ciales',
           back: 'Retour',
           confirm: 'Confirmer la R\u00e9servation',
+          loading: 'Confirmation de votre r\u00e9servation\u2026',
           confirmed: 'R\u00e9servation Confirm\u00e9e',
           new: 'Faire une autre r\u00e9servation',
           closed: 'Nous sommes ferm\u00e9s le lundi et le mardi midi.',
@@ -2189,6 +2222,7 @@
           notes: 'Speciale verzoeken',
           back: 'Terug',
           confirm: 'Reservering Bevestigen',
+          loading: 'Uw reservering bevestigen\u2026',
           confirmed: 'Reservering Bevestigd',
           new: 'Nog een reservering maken',
           closed: 'We zijn gesloten op maandag en dinsdagmiddag.',
@@ -2491,8 +2525,10 @@
         }
 
         const submitBtn = document.getElementById('booking-submit');
+        const loadingMsg = document.getElementById('booking-loading-msg');
         submitBtn.disabled = true;
-        submitBtn.textContent = '...';
+        submitBtn.classList.add('booking-btn--loading');
+        loadingMsg.classList.add('visible');
 
         try {
           const resp = await fetch('/api/book', {
@@ -2536,7 +2572,8 @@
           console.error(err);
         } finally {
           submitBtn.disabled = false;
-          submitBtn.textContent = getT(currentLang, 'booking.confirm');
+          submitBtn.classList.remove('booking-btn--loading');
+          loadingMsg.classList.remove('visible');
         }
       });
 
