@@ -2591,7 +2591,7 @@
             body: JSON.stringify({
               guests: guestCount, date: dateInput.value, time: selectedTime,
               firstname: first, lastname: last, email, phone, notes,
-              lang: currentLang
+              lang: currentLang, items: cart.length ? cart : undefined
             })
           });
           const data = await resp.json();
