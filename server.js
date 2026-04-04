@@ -10,10 +10,16 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
 // ── Supabase ──────────────────────────────────────────────────────────────────
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY   // service role key — server-side only
-);
+const SUPABASE_URL = process.env.SUPABASE_URL;
+
+// Public client — uses anon key, RLS filters active items automatically
+const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhrZGFkdWlteGh6b25kenZxbnd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMzc2NzEsImV4cCI6MjA5MDgxMzY3MX0.tBzetoHvv5VLbA1AXRi4AtG27o4htuZ1ivWnzIYryN4';
+const supabase = createClient(SUPABASE_URL, ANON_KEY);
+
+// Admin client — uses service_role key, bypasses RLS for full control
+const supabaseAdmin = process.env.SUPABASE_SERVICE_KEY
+  ? createClient(SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY)
+  : null;
 
 // ── Nodemailer ────────────────────────────────────────────────────────────────
 const transporter = nodemailer.createTransport({
@@ -121,13 +127,23 @@ app.post('/api/admin/login', (req, res) => {
   res.json({ token: process.env.ADMIN_PASSWORD });
 });
 
+function requireAdmin(res) {
+  if (!supabaseAdmin) {
+    res.status(503).json({ error: 'SUPABASE_SERVICE_KEY not configured — admin writes disabled' });
+    return false;
+  }
+  return true;
+}
+
 // ── GET /api/admin/menu ───────────────────────────────────────────────────────
 app.get('/api/admin/menu', adminAuth, async (req, res) => {
-  const { data: categories, error: catErr } = await supabase
+  // Admin menu read needs to see ALL items (including inactive) — use admin client if available
+  const db = supabaseAdmin || supabase;
+  const { data: categories, error: catErr } = await db
     .from('menu_categories').select('*').order('sort_order');
   if (catErr) return res.status(500).json({ error: catErr.message });
 
-  const { data: items, error: itemErr } = await supabase
+  const { data: items, error: itemErr } = await db
     .from('menu_items').select('*').order('sort_order');
   if (itemErr) return res.status(500).json({ error: itemErr.message });
 
@@ -136,14 +152,16 @@ app.get('/api/admin/menu', adminAuth, async (req, res) => {
 
 // ── POST /api/admin/categories ────────────────────────────────────────────────
 app.post('/api/admin/categories', adminAuth, async (req, res) => {
-  const { data, error } = await supabase.from('menu_categories').insert(req.body).select().single();
+  if (!requireAdmin(res)) return;
+  const { data, error } = await supabaseAdmin.from('menu_categories').insert(req.body).select().single();
   if (error) return res.status(500).json({ error: error.message });
   res.json(data);
 });
 
 // ── PUT /api/admin/categories/:id ─────────────────────────────────────────────
 app.put('/api/admin/categories/:id', adminAuth, async (req, res) => {
-  const { data, error } = await supabase.from('menu_categories')
+  if (!requireAdmin(res)) return;
+  const { data, error } = await supabaseAdmin.from('menu_categories')
     .update(req.body).eq('id', req.params.id).select().single();
   if (error) return res.status(500).json({ error: error.message });
   res.json(data);
@@ -151,21 +169,24 @@ app.put('/api/admin/categories/:id', adminAuth, async (req, res) => {
 
 // ── DELETE /api/admin/categories/:id ─────────────────────────────────────────
 app.delete('/api/admin/categories/:id', adminAuth, async (req, res) => {
-  const { error } = await supabase.from('menu_categories').delete().eq('id', req.params.id);
+  if (!requireAdmin(res)) return;
+  const { error } = await supabaseAdmin.from('menu_categories').delete().eq('id', req.params.id);
   if (error) return res.status(500).json({ error: error.message });
   res.json({ ok: true });
 });
 
 // ── POST /api/admin/items ─────────────────────────────────────────────────────
 app.post('/api/admin/items', adminAuth, async (req, res) => {
-  const { data, error } = await supabase.from('menu_items').insert(req.body).select().single();
+  if (!requireAdmin(res)) return;
+  const { data, error } = await supabaseAdmin.from('menu_items').insert(req.body).select().single();
   if (error) return res.status(500).json({ error: error.message });
   res.json(data);
 });
 
 // ── PUT /api/admin/items/:id ──────────────────────────────────────────────────
 app.put('/api/admin/items/:id', adminAuth, async (req, res) => {
-  const { data, error } = await supabase.from('menu_items')
+  if (!requireAdmin(res)) return;
+  const { data, error } = await supabaseAdmin.from('menu_items')
     .update(req.body).eq('id', req.params.id).select().single();
   if (error) return res.status(500).json({ error: error.message });
   res.json(data);
@@ -173,7 +194,8 @@ app.put('/api/admin/items/:id', adminAuth, async (req, res) => {
 
 // ── DELETE /api/admin/items/:id ───────────────────────────────────────────────
 app.delete('/api/admin/items/:id', adminAuth, async (req, res) => {
-  const { error } = await supabase.from('menu_items').delete().eq('id', req.params.id);
+  if (!requireAdmin(res)) return;
+  const { error } = await supabaseAdmin.from('menu_items').delete().eq('id', req.params.id);
   if (error) return res.status(500).json({ error: error.message });
   res.json({ ok: true });
 });

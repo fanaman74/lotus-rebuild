@@ -392,7 +392,9 @@
       body: body ? JSON.stringify(body) : undefined
     });
     if (r.status === 401) { logout(); return null; }
-    return r.json();
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || `Request failed (${r.status})`);
+    return data;
   }
 
   async function loadMenu() {
@@ -496,22 +498,30 @@
 
   // ── Toggle active ─────────────────────────────────────────────────────────
   async function toggleItem(id, current) {
-    await api('PUT', `/api/admin/items/${id}`, { active: !current });
-    const item = items.find(i => i.id === id);
-    if (item) item.active = !current;
-    renderContent();
-    renderSidebar();
-    showToast(current ? 'Item hidden from menu' : 'Item visible on menu', 'success');
+    try {
+      await api('PUT', `/api/admin/items/${id}`, { active: !current });
+      const item = items.find(i => i.id === id);
+      if (item) item.active = !current;
+      renderContent();
+      renderSidebar();
+      showToast(current ? 'Item hidden from menu' : 'Item visible on menu', 'success');
+    } catch (err) {
+      showToast('Failed to update: ' + err.message, 'error');
+    }
   }
 
   // ── Delete item ───────────────────────────────────────────────────────────
   async function deleteItem(id, name) {
     if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
-    await api('DELETE', `/api/admin/items/${id}`);
-    items = items.filter(i => i.id !== id);
-    renderContent();
-    renderSidebar();
-    showToast('Item deleted', 'success');
+    try {
+      await api('DELETE', `/api/admin/items/${id}`);
+      items = items.filter(i => i.id !== id);
+      renderContent();
+      renderSidebar();
+      showToast('Item deleted', 'success');
+    } catch (err) {
+      showToast('Failed to delete: ' + err.message, 'error');
+    }
   }
 
   // ── Item modal ────────────────────────────────────────────────────────────
