@@ -12,11 +12,10 @@ app.use(express.static(path.join(__dirname)));
 // ── Supabase ──────────────────────────────────────────────────────────────────
 const SUPABASE_URL = process.env.SUPABASE_URL;
 
-// Public client — uses anon key, RLS filters active items automatically
-const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhrZGFkdWlteGh6b25kenZxbnd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMzc2NzEsImV4cCI6MjA5MDgxMzY3MX0.tBzetoHvv5VLbA1AXRi4AtG27o4htuZ1ivWnzIYryN4';
-const supabase = createClient(SUPABASE_URL, ANON_KEY);
+// Public client — uses publishable/anon key, RLS filters active items automatically
+const supabase = createClient(SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
-// Admin client — uses service_role key, bypasses RLS for full control
+// Admin client — uses secret/service_role key, bypasses RLS for full control
 const supabaseAdmin = process.env.SUPABASE_SERVICE_KEY
   ? createClient(SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY)
   : null;
