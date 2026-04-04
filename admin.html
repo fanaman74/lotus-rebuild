@@ -285,6 +285,10 @@
         <input type="number" id="f-sort" min="1" placeholder="1">
       </div>
       <div class="form-group full">
+        <label>Image URL</label>
+        <input type="url" id="f-image-url" placeholder="https://images.unsplash.com/photo-...">
+      </div>
+      <div class="form-group full">
         <label>Description (EN)</label>
         <textarea id="f-desc-en" rows="2" placeholder="English description"></textarea>
       </div>
@@ -545,6 +549,7 @@
       document.getElementById('f-subtitle').value = item.subtitle || '';
       document.getElementById('f-price').value = item.price || '';
       document.getElementById('f-sort').value = item.sort_order || '';
+      document.getElementById('f-image-url').value = item.image_url || '';
       document.getElementById('f-desc-en').value = item.description_en || '';
       document.getElementById('f-desc-fr').value = item.description_fr || '';
       document.getElementById('f-desc-nl').value = item.description_nl || '';
@@ -553,6 +558,7 @@
       document.getElementById('f-name-fr').value = '';
       document.getElementById('f-subtitle').value = '';
       document.getElementById('f-price').value = '';
+      document.getElementById('f-image-url').value = '';
       document.getElementById('f-desc-en').value = '';
       document.getElementById('f-desc-fr').value = '';
       document.getElementById('f-desc-nl').value = '';
@@ -572,6 +578,7 @@
       category_slug: document.getElementById('f-category').value,
       name_en: document.getElementById('f-name-en').value.trim(),
       name_fr: document.getElementById('f-name-fr').value.trim() || null,
+      image_url: document.getElementById('f-image-url').value.trim() || null,
       subtitle: document.getElementById('f-subtitle').value.trim() || null,
       price: parseFloat(document.getElementById('f-price').value),
       sort_order: parseInt(document.getElementById('f-sort').value) || 1,

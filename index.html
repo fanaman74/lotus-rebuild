@@ -1314,6 +1314,41 @@
     }
     .booking-summary { color: var(--color-text-secondary); margin-bottom: 2rem; line-height: 1.7; }
 
+    /* ── Menu item image popup ── */
+    .menu-img-popup {
+      position: fixed;
+      z-index: 999;
+      pointer-events: none;
+      opacity: 0;
+      transform: scale(0.92) translateY(6px);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      width: 260px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+    }
+    .menu-img-popup.visible {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+    .menu-img-popup img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      display: block;
+    }
+    .menu-img-popup__label {
+      padding: 0.5rem 0.75rem;
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      font-style: italic;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     /* Submit spinner */
     .booking-btn--loading {
       position: relative;
@@ -2676,6 +2711,62 @@
     }
 
     /* ========================================
+       Menu Image Popup
+       ======================================== */
+    function initMenuImagePopup() {
+      const popup = document.getElementById('menu-img-popup');
+      const popupImg = document.getElementById('menu-img-popup-img');
+      const popupLabel = document.getElementById('menu-img-popup-label');
+      let hideTimer = null;
+
+      function showPopup(item, x, y) {
+        if (!item.image_url) return;
+        if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+        popupImg.src = item.image_url;
+        popupLabel.textContent = item.name_en;
+        positionPopup(x, y);
+        popup.classList.add('visible');
+      }
+
+      function hidePopup() {
+        hideTimer = setTimeout(function() {
+          popup.classList.remove('visible');
+        }, 80);
+      }
+
+      function positionPopup(x, y) {
+        const pw = 260, ph = 200, margin = 14;
+        const vw = window.innerWidth, vh = window.innerHeight;
+        let left = x + margin;
+        let top  = y - ph / 2;
+        if (left + pw > vw - margin) left = x - pw - margin;
+        if (top < margin) top = margin;
+        if (top + ph > vh - margin) top = vh - ph - margin;
+        popup.style.left = left + 'px';
+        popup.style.top  = top  + 'px';
+      }
+
+      // Delegate mouse events from menu panels
+      document.getElementById('menu-panels').addEventListener('mouseover', function(e) {
+        const row = e.target.closest('.menu__item');
+        if (!row) return;
+        const itemId = row.querySelector('.cart-add-btn') && row.querySelector('.cart-add-btn').dataset.id;
+        if (!itemId || !menuData) return;
+        const item = menuData.flatMap(function(c) { return c.items; }).find(function(i) { return String(i.id) === String(itemId); });
+        if (item && item.image_url) showPopup(item, e.clientX, e.clientY);
+      });
+
+      document.getElementById('menu-panels').addEventListener('mousemove', function(e) {
+        if (popup.classList.contains('visible')) positionPopup(e.clientX, e.clientY);
+      });
+
+      document.getElementById('menu-panels').addEventListener('mouseout', function(e) {
+        if (!e.target.closest('.menu__item')) return;
+        hidePopup();
+      });
+    }
+
+    /* ========================================
        Init
        ======================================== */
     document.addEventListener('DOMContentLoaded', function() {
@@ -2690,6 +2781,7 @@
       initCarousel();
       initBooking();
       initCart();
+      initMenuImagePopup();
 
       // Fetch live menu from API (active-only filtered); keep SITE_DATA on failure
       fetch('/api/menu')
@@ -2700,6 +2792,12 @@
   </script>
   <!-- Cart overlay -->
   <div class="cart-drawer__overlay" id="cart-overlay"></div>
+
+  <!-- Menu item image popup -->
+  <div class="menu-img-popup" id="menu-img-popup">
+    <img id="menu-img-popup-img" src="" alt="">
+    <div class="menu-img-popup__label" id="menu-img-popup-label"></div>
+  </div>
 
   <!-- Cart drawer -->
   <div class="cart-drawer" id="cart-drawer">
