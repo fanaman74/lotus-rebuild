@@ -733,6 +733,57 @@
     }
     .cart-clear-btn:hover { color: var(--color-text-primary); }
 
+    /* Cart order email form */
+    .cart-order-btn {
+      width: 100%; margin-top: 0.5rem;
+      padding: 0.75rem;
+      background: none;
+      border: 1px solid var(--color-border);
+      color: var(--color-text-secondary);
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .cart-order-btn:hover { border-color: var(--color-accent); color: var(--color-accent); }
+    .cart-order-form {
+      display: none;
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--color-border);
+    }
+    .cart-order-form.open { display: block; }
+    .cart-order-form input {
+      width: 100%; padding: 0.6rem 0.75rem; margin-bottom: 0.5rem;
+      background: var(--color-surface); border: 1px solid var(--color-border);
+      color: var(--color-text-primary); font-family: var(--font-body);
+      font-size: var(--text-sm); border-radius: 4px; outline: none;
+    }
+    .cart-order-form input:focus { border-color: var(--color-accent); }
+    .cart-order-submit {
+      width: 100%; padding: 0.7rem;
+      background: var(--color-surface); border: 1px solid var(--color-accent);
+      color: var(--color-accent); font-family: var(--font-body);
+      font-size: var(--text-sm); letter-spacing: 0.06em; text-transform: uppercase;
+      cursor: pointer; border-radius: 4px; transition: background 0.2s, color 0.2s;
+    }
+    .cart-order-submit:hover { background: var(--color-accent); color: #000; }
+    .cart-order-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+    .cart-order-confirm {
+      display: none; text-align: center; padding: 1rem 0;
+    }
+    .cart-order-confirm.show { display: block; }
+    .cart-order-ref {
+      font-size: var(--text-lg); font-weight: 700;
+      color: var(--color-accent); letter-spacing: 0.1em; margin-bottom: 0.5rem;
+    }
+    .cart-order-confirm p {
+      font-size: var(--text-sm); color: var(--color-text-secondary); line-height: 1.6;
+    }
+
     @media (min-width: 1025px) {
       .menu__items {
         grid-template-columns: 1fr 1fr;
@@ -2663,6 +2714,50 @@
       document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
     }
 
+    function initCartOrderForm() {
+      const toggleBtn  = document.getElementById('cart-order-toggle');
+      const form       = document.getElementById('cart-order-form');
+      const submitBtn  = document.getElementById('cart-order-submit');
+      const confirmEl  = document.getElementById('cart-order-confirm');
+      const refEl      = document.getElementById('cart-order-ref');
+
+      toggleBtn.addEventListener('click', function() {
+        const isOpen = form.classList.toggle('open');
+        toggleBtn.textContent = isOpen ? 'Cancel' : 'Send Order by Email';
+        confirmEl.classList.remove('show');
+      });
+
+      submitBtn.addEventListener('click', async function() {
+        const name  = document.getElementById('cart-order-name').value.trim();
+        const email = document.getElementById('cart-order-email').value.trim();
+        if (!name || !email) { alert('Please enter your name and email.'); return; }
+        if (!cart.length)    { alert('Your cart is empty.'); return; }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending…';
+
+        try {
+          const resp = await fetch('/api/order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, lang: currentLang, items: cart })
+          });
+          const data = await resp.json();
+          if (!resp.ok) throw new Error(data.error || 'Request failed');
+
+          refEl.textContent = data.ref;
+          form.classList.remove('open');
+          toggleBtn.style.display = 'none';
+          confirmEl.classList.add('show');
+        } catch (err) {
+          alert('Something went wrong. Please call us directly at 02 721 98 33.');
+          console.error(err);
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Send Order';
+        }
+      });
+    }
+
     function initCart() {
       document.getElementById('cart-fab').addEventListener('click', cartOpen);
       document.getElementById('cart-close').addEventListener('click', cartClose);
@@ -2693,6 +2788,7 @@
       initCarousel();
       initBooking();
       initCart();
+      initCartOrderForm();
 
       // Fetch live menu from API (active-only filtered); keep SITE_DATA on failure
       fetch('/api/menu')
@@ -2718,6 +2814,21 @@
         <span class="cart-total__amount" id="cart-total">€0.00</span>
       </div>
       <button class="cart-checkout-btn" onclick="cartCheckout()">Proceed to booking</button>
+      <button class="cart-order-btn" id="cart-order-toggle">Send Order by Email</button>
+
+      <!-- Email order form -->
+      <div class="cart-order-form" id="cart-order-form">
+        <input type="text" id="cart-order-name" placeholder="Your name" autocomplete="name">
+        <input type="email" id="cart-order-email" placeholder="Your email address" autocomplete="email">
+        <button class="cart-order-submit" id="cart-order-submit">Send Order</button>
+      </div>
+
+      <!-- Confirmation -->
+      <div class="cart-order-confirm" id="cart-order-confirm">
+        <div class="cart-order-ref" id="cart-order-ref"></div>
+        <p>Your order has been sent. Please call us at <strong>02 721 98 33</strong> to confirm.</p>
+      </div>
+
       <button class="cart-clear-btn" onclick="cartClear()">Clear order</button>
     </div>
   </div>

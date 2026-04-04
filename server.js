@@ -112,6 +112,107 @@ app.post('/api/book', async (req, res) => {
   res.json({ ref });
 });
 
+// ── POST /api/order ───────────────────────────────────────────────────────────
+app.post('/api/order', async (req, res) => {
+  const { name, email, lang, items } = req.body;
+
+  if (!name || !email || !items || !items.length) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  // Generate order reference
+  const ref = 'ORD-' + crypto.randomBytes(3).toString('hex').toUpperCase();
+
+  // Build item rows
+  const itemLines = items.map(item => {
+    const qty   = item.qty || 1;
+    const price = parseFloat(item.price) || 0;
+    const total = (price * qty).toFixed(2);
+    return { name: item.name, qty, price: price.toFixed(2), total };
+  });
+  const grandTotal = itemLines.reduce((sum, i) => sum + parseFloat(i.total), 0).toFixed(2);
+
+  // Build email body per language
+  const greetings = {
+    en: `Dear ${name},`,
+    fr: `Cher(e) ${name},`,
+    nl: `Beste ${name},`
+  };
+  const intros = {
+    en: `Thank you so much for placing your order with Lotus — we truly appreciate your trust and look forward to welcoming you.\n\nBelow is a summary of your order:`,
+    fr: `Nous vous remercions chaleureusement pour votre commande chez Lotus. Votre confiance nous touche et nous nous réjouissons de vous accueillir bientôt.\n\nVoici le récapitulatif de votre commande :`,
+    nl: `Hartelijk dank voor uw bestelling bij Lotus. Wij waarderen uw vertrouwen en kijken er naar uit u spoedig te verwelkomen.\n\nHieronder vindt u een overzicht van uw bestelling:`
+  };
+  const tableHeader = {
+    en: `  Item                          Qty    Unit     Total`,
+    fr: `  Article                       Qté    Unité    Total`,
+    nl: `  Artikel                        Aant.  Stuk     Totaal`
+  };
+  const separator = '  ' + '─'.repeat(52);
+  const tableRows = itemLines.map(i => {
+    const namePad  = i.name.substring(0, 30).padEnd(30);
+    const qtyPad   = String(i.qty).padEnd(6);
+    const pricePad = ('€' + i.price).padEnd(8);
+    return `  ${namePad} ${qtyPad} ${pricePad} €${i.total}`;
+  }).join('\n');
+  const totalLines = {
+    en: `${separator}\n  ${'TOTAL'.padEnd(38)} €${grandTotal}`,
+    fr: `${separator}\n  ${'TOTAL'.padEnd(38)} €${grandTotal}`,
+    nl: `${separator}\n  ${'TOTAAL'.padEnd(38)} €${grandTotal}`
+  };
+  const callToActions = {
+    en: `To confirm your order, please call us at:\n\n  📞  02 721 98 33\n\nOur team will be happy to finalise the details with you, confirm timing, and answer any questions you may have.`,
+    fr: `Pour confirmer votre commande, veuillez nous appeler au :\n\n  📞  02 721 98 33\n\nNotre équipe se fera un plaisir de finaliser les détails avec vous, confirmer l'heure et répondre à toutes vos questions.`,
+    nl: `Om uw bestelling te bevestigen, gelieve ons te bellen op:\n\n  📞  02 721 98 33\n\nOns team helpt u graag verder met de details, tijdstip en eventuele vragen.`
+  };
+  const closings = {
+    en: `We look forward to hearing from you.\n\nWarm regards,\nThe Lotus Team`,
+    fr: `Dans l'attente de votre appel, veuillez agréer nos cordiales salutations.\n\nL'équipe Lotus`,
+    nl: `We kijken uit naar uw telefoontje.\n\nMet vriendelijke groeten,\nHet Lotus-team`
+  };
+  const l = ['en', 'fr', 'nl'].includes(lang) ? lang : 'en';
+
+  const body = [
+    greetings[l],
+    '',
+    intros[l],
+    '',
+    `  Order reference: ${ref}`,
+    '',
+    tableHeader[l],
+    tableRows,
+    totalLines[l],
+    '',
+    callToActions[l],
+    '',
+    closings[l],
+    '',
+    '─'.repeat(54),
+    'Lotus 荷花  |  Av. des Anciens Combattants 81, 1950 Kraainem',
+    '02 721 98 33  |  lotuskraainem.be'
+  ].join('\n');
+
+  const subjects = {
+    en: `Your order at Lotus — ${ref}`,
+    fr: `Votre commande chez Lotus — ${ref}`,
+    nl: `Uw bestelling bij Lotus — ${ref}`
+  };
+
+  try {
+    await transporter.sendMail({
+      from: `"Lotus Kraainem" <${process.env.GMAIL_USER}>`,
+      to: email,
+      subject: subjects[l],
+      text: body
+    });
+  } catch (mailErr) {
+    console.error('Order email failed:', mailErr.message);
+    // Still return the ref — customer has the code even if email failed
+  }
+
+  res.json({ ref });
+});
+
 // ── Admin auth middleware ──────────────────────────────────────────────────────
 function adminAuth(req, res, next) {
   const token = (req.headers.authorization || '').replace('Bearer ', '');
